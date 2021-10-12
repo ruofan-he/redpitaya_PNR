@@ -1,0 +1,7 @@
+.Xil/
+/out
+/sdk
+/project
+/build
+*.jou
+*.log
