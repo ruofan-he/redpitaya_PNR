@@ -109,6 +109,10 @@ if { ${design_name} eq "" } {
 
 }
 
+  # Add USER_COMMENTS on $design_name
+  set_property USER_COMMENTS.comment_0 "stemlab125-14は入出力ともに14bitなので、スレッショルドの精度も14bitとする。" [get_bd_designs $design_name]
+  set_property USER_COMMENTS.comment_1 "判別したい光子数だけAXI GPIOと出力ポートを追加する(笑)" [get_bd_designs $design_name]
+
 common::send_gid_msg -ssname BD::TCL -id 2005 -severity "INFO" "Currently the variable <design_name> is equal to \"$design_name\"."
 
 if { $nRet != 0 } {
@@ -128,6 +132,7 @@ xilinx.com:ip:proc_sys_reset:5.0\
 xilinx.com:ip:processing_system7:5.5\
 xilinx.com:ip:xadc_wiz:3.3\
 xilinx.com:ip:xlconstant:1.1\
+xilinx.com:ip:axi_gpio:2.0\
 "
 
    set list_ips_missing ""
@@ -156,6 +161,125 @@ if { $bCheckIPsPassed != 1 } {
 # DESIGN PROCs
 ##################################################################
 
+
+# Hierarchical cell: ADC_THRESHOLD_GPIO
+proc create_hier_cell_ADC_THRESHOLD_GPIO { parentCell nameHier } {
+
+  variable script_folder
+
+  if { $parentCell eq "" || $nameHier eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2092 -severity "ERROR" "create_hier_cell_ADC_THRESHOLD_GPIO() - Empty argument(s)!"}
+     return
+  }
+
+  # Get object for parentCell
+  set parentObj [get_bd_cells $parentCell]
+  if { $parentObj == "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
+     return
+  }
+
+  # Make sure parentObj is hier blk
+  set parentType [get_property TYPE $parentObj]
+  if { $parentType ne "hier" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
+     return
+  }
+
+  # Save current instance; Restore later
+  set oldCurInst [current_bd_instance .]
+
+  # Set parent object as current
+  current_bd_instance $parentObj
+
+  # Create cell and set as current instance
+  set hier_obj [create_bd_cell -type hier $nameHier]
+  current_bd_instance $hier_obj
+
+  # Create interface pins
+  create_bd_intf_pin -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S00_AXI
+
+
+  # Create pins
+  create_bd_pin -dir O -from 13 -to 0 ADC_THRESHOLD_PHOTON1
+  create_bd_pin -dir O -from 13 -to 0 ADC_THRESHOLD_PHOTON2
+  create_bd_pin -dir O -from 13 -to 0 ADC_THRESHOLD_PHOTON3
+  create_bd_pin -dir O -from 13 -to 0 ADC_THRESHOLD_PHOTON4
+  create_bd_pin -dir O -from 13 -to 0 ADC_THRESHOLD_PHOTON5
+  create_bd_pin -dir O -from 13 -to 0 ADC_THRESHOLD_PHOTON6
+  create_bd_pin -dir I -type clk s_axi_aclk
+  create_bd_pin -dir I -type rst s_axi_aresetn
+
+  # Create instance: axi_gpio_photon1, and set properties
+  set axi_gpio_photon1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_photon1 ]
+  set_property -dict [ list \
+   CONFIG.C_ALL_OUTPUTS {1} \
+   CONFIG.C_GPIO_WIDTH {14} \
+ ] $axi_gpio_photon1
+
+  # Create instance: axi_gpio_photon2, and set properties
+  set axi_gpio_photon2 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_photon2 ]
+  set_property -dict [ list \
+   CONFIG.C_ALL_OUTPUTS {1} \
+   CONFIG.C_GPIO_WIDTH {14} \
+ ] $axi_gpio_photon2
+
+  # Create instance: axi_gpio_photon3, and set properties
+  set axi_gpio_photon3 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_photon3 ]
+  set_property -dict [ list \
+   CONFIG.C_ALL_OUTPUTS {1} \
+   CONFIG.C_GPIO_WIDTH {14} \
+ ] $axi_gpio_photon3
+
+  # Create instance: axi_gpio_photon4, and set properties
+  set axi_gpio_photon4 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_photon4 ]
+  set_property -dict [ list \
+   CONFIG.C_ALL_OUTPUTS {1} \
+   CONFIG.C_GPIO_WIDTH {14} \
+ ] $axi_gpio_photon4
+
+  # Create instance: axi_gpio_photon5, and set properties
+  set axi_gpio_photon5 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_photon5 ]
+  set_property -dict [ list \
+   CONFIG.C_ALL_OUTPUTS {1} \
+   CONFIG.C_GPIO_WIDTH {14} \
+ ] $axi_gpio_photon5
+
+  # Create instance: axi_gpio_photon6, and set properties
+  set axi_gpio_photon6 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_photon6 ]
+  set_property -dict [ list \
+   CONFIG.C_ALL_OUTPUTS {1} \
+   CONFIG.C_GPIO_WIDTH {14} \
+ ] $axi_gpio_photon6
+
+  # Create instance: axi_interconnect_0, and set properties
+  set axi_interconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_interconnect_0 ]
+  set_property -dict [ list \
+   CONFIG.NUM_MI {6} \
+ ] $axi_interconnect_0
+
+  # Create interface connections
+  connect_bd_intf_net -intf_net Conn1 [get_bd_intf_pins S00_AXI] [get_bd_intf_pins axi_interconnect_0/S00_AXI]
+  connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_pins axi_gpio_photon1/S_AXI] [get_bd_intf_pins axi_interconnect_0/M00_AXI]
+  connect_bd_intf_net -intf_net axi_interconnect_0_M01_AXI [get_bd_intf_pins axi_gpio_photon2/S_AXI] [get_bd_intf_pins axi_interconnect_0/M01_AXI]
+  connect_bd_intf_net -intf_net axi_interconnect_0_M02_AXI [get_bd_intf_pins axi_gpio_photon3/S_AXI] [get_bd_intf_pins axi_interconnect_0/M02_AXI]
+  connect_bd_intf_net -intf_net axi_interconnect_0_M03_AXI [get_bd_intf_pins axi_gpio_photon4/S_AXI] [get_bd_intf_pins axi_interconnect_0/M03_AXI]
+  connect_bd_intf_net -intf_net axi_interconnect_0_M04_AXI [get_bd_intf_pins axi_gpio_photon5/S_AXI] [get_bd_intf_pins axi_interconnect_0/M04_AXI]
+  connect_bd_intf_net -intf_net axi_interconnect_0_M05_AXI [get_bd_intf_pins axi_gpio_photon6/S_AXI] [get_bd_intf_pins axi_interconnect_0/M05_AXI]
+
+  # Create port connections
+  connect_bd_net -net axi_gpio_photon1_gpio_io_o [get_bd_pins ADC_THRESHOLD_PHOTON1] [get_bd_pins axi_gpio_photon1/gpio_io_o]
+  connect_bd_net -net axi_gpio_photon2_gpio_io_o [get_bd_pins ADC_THRESHOLD_PHOTON2] [get_bd_pins axi_gpio_photon2/gpio_io_o]
+  connect_bd_net -net axi_gpio_photon3_gpio_io_o [get_bd_pins ADC_THRESHOLD_PHOTON3] [get_bd_pins axi_gpio_photon3/gpio_io_o]
+  connect_bd_net -net axi_gpio_photon4_gpio_io_o [get_bd_pins ADC_THRESHOLD_PHOTON4] [get_bd_pins axi_gpio_photon4/gpio_io_o]
+  connect_bd_net -net axi_gpio_photon5_gpio_io_o [get_bd_pins ADC_THRESHOLD_PHOTON5] [get_bd_pins axi_gpio_photon5/gpio_io_o]
+  connect_bd_net -net axi_gpio_photon6_gpio_io_o [get_bd_pins ADC_THRESHOLD_PHOTON6] [get_bd_pins axi_gpio_photon6/gpio_io_o]
+  connect_bd_net -net s_axi_aclk_1 [get_bd_pins s_axi_aclk] [get_bd_pins axi_gpio_photon1/s_axi_aclk] [get_bd_pins axi_gpio_photon2/s_axi_aclk] [get_bd_pins axi_gpio_photon3/s_axi_aclk] [get_bd_pins axi_gpio_photon4/s_axi_aclk] [get_bd_pins axi_gpio_photon5/s_axi_aclk] [get_bd_pins axi_gpio_photon6/s_axi_aclk] [get_bd_pins axi_interconnect_0/ACLK] [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_0/M01_ACLK] [get_bd_pins axi_interconnect_0/M02_ACLK] [get_bd_pins axi_interconnect_0/M03_ACLK] [get_bd_pins axi_interconnect_0/M04_ACLK] [get_bd_pins axi_interconnect_0/M05_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK]
+  connect_bd_net -net s_axi_aresetn_1 [get_bd_pins s_axi_aresetn] [get_bd_pins axi_gpio_photon1/s_axi_aresetn] [get_bd_pins axi_gpio_photon2/s_axi_aresetn] [get_bd_pins axi_gpio_photon3/s_axi_aresetn] [get_bd_pins axi_gpio_photon4/s_axi_aresetn] [get_bd_pins axi_gpio_photon5/s_axi_aresetn] [get_bd_pins axi_gpio_photon6/s_axi_aresetn] [get_bd_pins axi_interconnect_0/ARESETN] [get_bd_pins axi_interconnect_0/M00_ARESETN] [get_bd_pins axi_interconnect_0/M01_ARESETN] [get_bd_pins axi_interconnect_0/M02_ARESETN] [get_bd_pins axi_interconnect_0/M03_ARESETN] [get_bd_pins axi_interconnect_0/M04_ARESETN] [get_bd_pins axi_interconnect_0/M05_ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN]
+
+  # Restore current instance
+  current_bd_instance $oldCurInst
+}
 
 
 # Procedure to create entire design; Provide argument to make
@@ -192,8 +316,11 @@ proc create_root_design { parentCell } {
 
   # Create interface ports
   set DDR [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 DDR ]
+
   set FIXED_IO [ create_bd_intf_port -mode Master -vlnv xilinx.com:display_processing_system7:fixedio_rtl:1.0 FIXED_IO ]
+
   set GPIO [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:gpio_rtl:1.0 GPIO ]
+
   set M_AXI_GP0 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 M_AXI_GP0 ]
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {32} \
@@ -203,6 +330,7 @@ proc create_root_design { parentCell } {
    ] $M_AXI_GP0
 
   set SPI0 [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:spi_rtl:1.0 SPI0 ]
+
   set S_AXI_HP0 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:aximm_rtl:1.0 S_AXI_HP0 ]
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {32} \
@@ -270,12 +398,23 @@ proc create_root_design { parentCell } {
    ] $S_AXI_HP1
 
   set Vaux0 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 Vaux0 ]
+
   set Vaux1 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 Vaux1 ]
+
   set Vaux8 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 Vaux8 ]
+
   set Vaux9 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 Vaux9 ]
+
   set Vp_Vn [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 Vp_Vn ]
 
+
   # Create ports
+  set ADC_THRESHOLD_PHOTON1 [ create_bd_port -dir O -from 13 -to 0 -type data ADC_THRESHOLD_PHOTON1 ]
+  set ADC_THRESHOLD_PHOTON2 [ create_bd_port -dir O -from 13 -to 0 -type data ADC_THRESHOLD_PHOTON2 ]
+  set ADC_THRESHOLD_PHOTON3 [ create_bd_port -dir O -from 13 -to 0 -type data ADC_THRESHOLD_PHOTON3 ]
+  set ADC_THRESHOLD_PHOTON4 [ create_bd_port -dir O -from 13 -to 0 -type data ADC_THRESHOLD_PHOTON4 ]
+  set ADC_THRESHOLD_PHOTON5 [ create_bd_port -dir O -from 13 -to 0 -type data ADC_THRESHOLD_PHOTON5 ]
+  set ADC_THRESHOLD_PHOTON6 [ create_bd_port -dir O -from 13 -to 0 -type data ADC_THRESHOLD_PHOTON6 ]
   set FCLK_CLK0 [ create_bd_port -dir O -type clk FCLK_CLK0 ]
   set FCLK_CLK1 [ create_bd_port -dir O -type clk FCLK_CLK1 ]
   set FCLK_CLK2 [ create_bd_port -dir O -type clk FCLK_CLK2 ]
@@ -290,6 +429,12 @@ proc create_root_design { parentCell } {
  ] $M_AXI_GP0_ACLK
   set S_AXI_HP0_aclk [ create_bd_port -dir I -type clk -freq_hz 125000000 S_AXI_HP0_aclk ]
   set S_AXI_HP1_aclk [ create_bd_port -dir I -type clk -freq_hz 125000000 S_AXI_HP1_aclk ]
+
+  # Create instance: ADC_THRESHOLD_GPIO
+  create_hier_cell_ADC_THRESHOLD_GPIO [current_bd_instance .] ADC_THRESHOLD_GPIO
+
+  # Create instance: axi_interconnect_0, and set properties
+  set axi_interconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_interconnect_0 ]
 
   # Create instance: axi_protocol_converter_0, and set properties
   set axi_protocol_converter_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_protocol_converter:2.1 axi_protocol_converter_0 ]
@@ -726,6 +871,9 @@ proc create_root_design { parentCell } {
    CONFIG.PCW_USE_S_AXI_HP1 {1} \
  ] $processing_system7
 
+  # Create instance: rst_ps7_125M, and set properties
+  set rst_ps7_125M [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_ps7_125M ]
+
   # Create instance: xadc, and set properties
   set xadc [ create_bd_cell -type ip -vlnv xilinx.com:ip:xadc_wiz:3.3 xadc ]
   set_property -dict [ list \
@@ -747,12 +895,14 @@ proc create_root_design { parentCell } {
   set xlconstant [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant ]
 
   # Create interface connections
+  connect_bd_intf_net -intf_net S00_AXI_1 [get_bd_intf_pins axi_interconnect_0/S00_AXI] [get_bd_intf_pins axi_protocol_converter_0/M_AXI]
   connect_bd_intf_net -intf_net Vaux0_1 [get_bd_intf_ports Vaux0] [get_bd_intf_pins xadc/Vaux0]
   connect_bd_intf_net -intf_net Vaux1_1 [get_bd_intf_ports Vaux1] [get_bd_intf_pins xadc/Vaux1]
   connect_bd_intf_net -intf_net Vaux8_1 [get_bd_intf_ports Vaux8] [get_bd_intf_pins xadc/Vaux8]
   connect_bd_intf_net -intf_net Vaux9_1 [get_bd_intf_ports Vaux9] [get_bd_intf_pins xadc/Vaux9]
   connect_bd_intf_net -intf_net Vp_Vn_1 [get_bd_intf_ports Vp_Vn] [get_bd_intf_pins xadc/Vp_Vn]
-  connect_bd_intf_net -intf_net axi_protocol_converter_0_M_AXI [get_bd_intf_pins axi_protocol_converter_0/M_AXI] [get_bd_intf_pins xadc/s_axi_lite]
+  connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_pins axi_interconnect_0/M00_AXI] [get_bd_intf_pins xadc/s_axi_lite]
+  connect_bd_intf_net -intf_net axi_interconnect_0_M01_AXI [get_bd_intf_pins ADC_THRESHOLD_GPIO/S00_AXI] [get_bd_intf_pins axi_interconnect_0/M01_AXI]
   connect_bd_intf_net -intf_net processing_system7_0_M_AXI_GP0 [get_bd_intf_ports M_AXI_GP0] [get_bd_intf_pins processing_system7/M_AXI_GP0]
   connect_bd_intf_net -intf_net processing_system7_0_M_AXI_GP1 [get_bd_intf_pins axi_protocol_converter_0/S_AXI] [get_bd_intf_pins processing_system7/M_AXI_GP1]
   connect_bd_intf_net -intf_net processing_system7_0_ddr [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system7/DDR]
@@ -763,17 +913,24 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net s_axi_hp1_1 [get_bd_intf_ports S_AXI_HP1] [get_bd_intf_pins processing_system7/S_AXI_HP1]
 
   # Create port connections
+  connect_bd_net -net ADC_THRESHOLD_GPIO_ADC_THRESHOLD_PHOTON1 [get_bd_ports ADC_THRESHOLD_PHOTON1] [get_bd_pins ADC_THRESHOLD_GPIO/ADC_THRESHOLD_PHOTON1]
+  connect_bd_net -net ADC_THRESHOLD_GPIO_ADC_THRESHOLD_PHOTON2 [get_bd_ports ADC_THRESHOLD_PHOTON2] [get_bd_pins ADC_THRESHOLD_GPIO/ADC_THRESHOLD_PHOTON2]
+  connect_bd_net -net ADC_THRESHOLD_GPIO_ADC_THRESHOLD_PHOTON3 [get_bd_ports ADC_THRESHOLD_PHOTON3] [get_bd_pins ADC_THRESHOLD_GPIO/ADC_THRESHOLD_PHOTON3]
+  connect_bd_net -net ADC_THRESHOLD_GPIO_ADC_THRESHOLD_PHOTON4 [get_bd_ports ADC_THRESHOLD_PHOTON4] [get_bd_pins ADC_THRESHOLD_GPIO/ADC_THRESHOLD_PHOTON4]
+  connect_bd_net -net ADC_THRESHOLD_GPIO_ADC_THRESHOLD_PHOTON5 [get_bd_ports ADC_THRESHOLD_PHOTON5] [get_bd_pins ADC_THRESHOLD_GPIO/ADC_THRESHOLD_PHOTON5]
+  connect_bd_net -net ADC_THRESHOLD_GPIO_ADC_THRESHOLD_PHOTON6 [get_bd_ports ADC_THRESHOLD_PHOTON6] [get_bd_pins ADC_THRESHOLD_GPIO/ADC_THRESHOLD_PHOTON6]
   connect_bd_net -net m_axi_gp0_aclk_1 [get_bd_ports M_AXI_GP0_ACLK] [get_bd_pins processing_system7/M_AXI_GP0_ACLK]
   connect_bd_net -net proc_sys_reset_0_interconnect_aresetn [get_bd_pins axi_protocol_converter_0/aresetn] [get_bd_pins proc_sys_reset/interconnect_aresetn]
-  connect_bd_net -net proc_sys_reset_0_peripheral_aresetn [get_bd_pins proc_sys_reset/peripheral_aresetn] [get_bd_pins xadc/s_axi_aresetn]
-  connect_bd_net -net processing_system7_0_fclk_clk0 [get_bd_ports FCLK_CLK0] [get_bd_pins processing_system7/FCLK_CLK0]
+  connect_bd_net -net proc_sys_reset_0_peripheral_aresetn [get_bd_pins axi_interconnect_0/M00_ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins proc_sys_reset/peripheral_aresetn] [get_bd_pins xadc/s_axi_aresetn]
+  connect_bd_net -net processing_system7_0_fclk_clk0 [get_bd_ports FCLK_CLK0] [get_bd_pins ADC_THRESHOLD_GPIO/s_axi_aclk] [get_bd_pins axi_interconnect_0/ACLK] [get_bd_pins axi_interconnect_0/M01_ACLK] [get_bd_pins processing_system7/FCLK_CLK0] [get_bd_pins rst_ps7_125M/slowest_sync_clk]
   connect_bd_net -net processing_system7_0_fclk_clk1 [get_bd_ports FCLK_CLK1] [get_bd_pins processing_system7/FCLK_CLK1]
   connect_bd_net -net processing_system7_0_fclk_clk2 [get_bd_ports FCLK_CLK2] [get_bd_pins processing_system7/FCLK_CLK2]
-  connect_bd_net -net processing_system7_0_fclk_clk3 [get_bd_ports FCLK_CLK3] [get_bd_pins axi_protocol_converter_0/aclk] [get_bd_pins proc_sys_reset/slowest_sync_clk] [get_bd_pins processing_system7/FCLK_CLK3] [get_bd_pins processing_system7/M_AXI_GP1_ACLK] [get_bd_pins xadc/s_axi_aclk]
-  connect_bd_net -net processing_system7_0_fclk_reset0_n [get_bd_ports FCLK_RESET0_N] [get_bd_pins processing_system7/FCLK_RESET0_N]
+  connect_bd_net -net processing_system7_0_fclk_clk3 [get_bd_ports FCLK_CLK3] [get_bd_pins axi_interconnect_0/M00_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] [get_bd_pins axi_protocol_converter_0/aclk] [get_bd_pins proc_sys_reset/slowest_sync_clk] [get_bd_pins processing_system7/FCLK_CLK3] [get_bd_pins processing_system7/M_AXI_GP1_ACLK] [get_bd_pins xadc/s_axi_aclk]
+  connect_bd_net -net processing_system7_0_fclk_reset0_n [get_bd_ports FCLK_RESET0_N] [get_bd_pins processing_system7/FCLK_RESET0_N] [get_bd_pins rst_ps7_125M/ext_reset_in]
   connect_bd_net -net processing_system7_0_fclk_reset1_n [get_bd_ports FCLK_RESET1_N] [get_bd_pins processing_system7/FCLK_RESET1_N]
   connect_bd_net -net processing_system7_0_fclk_reset2_n [get_bd_ports FCLK_RESET2_N] [get_bd_pins processing_system7/FCLK_RESET2_N]
   connect_bd_net -net processing_system7_0_fclk_reset3_n [get_bd_ports FCLK_RESET3_N] [get_bd_pins proc_sys_reset/ext_reset_in] [get_bd_pins processing_system7/FCLK_RESET3_N]
+  connect_bd_net -net rst_ps7_125M_peripheral_aresetn [get_bd_pins ADC_THRESHOLD_GPIO/s_axi_aresetn] [get_bd_pins axi_interconnect_0/ARESETN] [get_bd_pins axi_interconnect_0/M01_ARESETN] [get_bd_pins rst_ps7_125M/peripheral_aresetn]
   connect_bd_net -net s_axi_hp0_aclk [get_bd_ports S_AXI_HP0_aclk] [get_bd_pins processing_system7/S_AXI_HP0_ACLK]
   connect_bd_net -net s_axi_hp1_aclk [get_bd_ports S_AXI_HP1_aclk] [get_bd_pins processing_system7/S_AXI_HP1_ACLK]
   connect_bd_net -net xadc_ip2intc_irpt [get_bd_pins processing_system7/IRQ_F2P] [get_bd_pins xadc/ip2intc_irpt]
@@ -781,6 +938,12 @@ proc create_root_design { parentCell } {
 
   # Create address segments
   assign_bd_address -offset 0x40000000 -range 0x40000000 -target_address_space [get_bd_addr_spaces processing_system7/Data] [get_bd_addr_segs M_AXI_GP0/Reg] -force
+  assign_bd_address -offset 0x81200000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7/Data] [get_bd_addr_segs ADC_THRESHOLD_GPIO/axi_gpio_photon1/S_AXI/Reg] -force
+  assign_bd_address -offset 0x81210000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7/Data] [get_bd_addr_segs ADC_THRESHOLD_GPIO/axi_gpio_photon2/S_AXI/Reg] -force
+  assign_bd_address -offset 0x81220000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7/Data] [get_bd_addr_segs ADC_THRESHOLD_GPIO/axi_gpio_photon3/S_AXI/Reg] -force
+  assign_bd_address -offset 0x81230000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7/Data] [get_bd_addr_segs ADC_THRESHOLD_GPIO/axi_gpio_photon4/S_AXI/Reg] -force
+  assign_bd_address -offset 0x81240000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7/Data] [get_bd_addr_segs ADC_THRESHOLD_GPIO/axi_gpio_photon5/S_AXI/Reg] -force
+  assign_bd_address -offset 0x81250000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7/Data] [get_bd_addr_segs ADC_THRESHOLD_GPIO/axi_gpio_photon6/S_AXI/Reg] -force
   assign_bd_address -offset 0x83C00000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7/Data] [get_bd_addr_segs xadc/s_axi_lite/Reg] -force
   assign_bd_address -offset 0x00000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces S_AXI_HP0] [get_bd_addr_segs processing_system7/S_AXI_HP0/HP0_DDR_LOWOCM] -force
   assign_bd_address -offset 0x00000000 -range 0x20000000 -target_address_space [get_bd_addr_spaces S_AXI_HP1] [get_bd_addr_segs processing_system7/S_AXI_HP1/HP1_DDR_LOWOCM] -force
@@ -789,7 +952,6 @@ proc create_root_design { parentCell } {
   # Restore current instance
   current_bd_instance $oldCurInst
 
-  validate_bd_design
   save_bd_design
 }
 # End of create_root_design()
@@ -801,4 +963,6 @@ proc create_root_design { parentCell } {
 
 create_root_design ""
 
+
+common::send_gid_msg -ssname BD::TCL -id 2053 -severity "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
 
