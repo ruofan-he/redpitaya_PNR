@@ -461,8 +461,13 @@ red_pitaya_scope i_scope (
   .sys_ren       (sys[1].ren  ),
   .sys_rdata     (sys[1].rdata),
   .sys_err       (sys[1].err  ),
-  .sys_ack       (sys[1].ack  )
+  .sys_ack       (sys[1].ack  )//,
+  //Furusawa_original
+  // trigger_output
+  //.trig_sig      ()
 );
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //  DAC arbitrary signal generator

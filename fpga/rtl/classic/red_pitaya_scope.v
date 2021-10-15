@@ -90,7 +90,11 @@ module red_pitaya_scope #(
    input                 sys_ren       ,  // bus read enable
    output reg [ 32-1: 0] sys_rdata     ,  // bus read data
    output reg            sys_err       ,  // bus error indicator
-   output reg            sys_ack          // bus acknowledge signal
+   output reg            sys_ack       ,  // bus acknowledge signal
+
+   //Furusawa_original
+   //trig_output
+   output                trig_sig         //=adc_trig signal
 );
 
 reg             adc_arm_do   ;
@@ -260,7 +264,7 @@ end else begin
 
    if (div_ok_a || div_ok_b) begin // division finished
       div_dat_got <= 1'b1;    
-      a_div_uns   <= div_out_a; //get unsigned output data  
+      a_div_uns   <= div_out_a; //get unsigned output data
       b_div_uns   <= div_out_b;   
    end else
       div_dat_got <= 1'b0;
@@ -699,6 +703,8 @@ end else begin
     default : adc_trig <= 1'b0          ;
    endcase
 end
+
+assign trig_sig = acd_trig;
 
 //---------------------------------------------------------------------------------
 //  Trigger created from input signal
