@@ -704,7 +704,7 @@ end else begin
    endcase
 end
 
-assign trig_sig = acd_trig;
+assign trig_sig = adc_trig;
 
 //---------------------------------------------------------------------------------
 //  Trigger created from input signal
