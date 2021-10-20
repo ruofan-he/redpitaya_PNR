@@ -443,8 +443,6 @@ assign extension_n_i = {8{1'b1}};
 IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(extension_p_i), .T(extension_p_t) );
 IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(extension_n_i), .T(extension_n_t) );
 
-
-
 assign gpio.i[15: 8] = exp_p_in;
 assign gpio.i[23:16] = exp_n_in;
 
@@ -482,6 +480,8 @@ red_pitaya_scope i_scope (
   .sys_err       (sys[1].err  ),
   .sys_ack       (sys[1].ack  )
 );
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //  DAC arbitrary signal generator
