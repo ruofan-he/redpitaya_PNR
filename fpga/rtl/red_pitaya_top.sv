@@ -423,8 +423,27 @@ red_pitaya_hk i_hk (
 // GPIO
 ////////////////////////////////////////////////////////////////////////////////
 
-IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out), .T(~exp_p_dir) );
-IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out), .T(~exp_n_dir) );
+// IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(exp_p_out), .T(~exp_p_dir) );
+// IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(exp_n_out), .T(~exp_n_dir) );
+// T = 1, IO -> O
+// T = 0, I  -> IO,O
+// thus, basically O = IO
+
+// exp_x_io is directly connected to extention E1 pin
+// arrange to output digital value
+logic [8-1:0] extension_p_t;
+logic [8-1:0] extension_n_t;
+logic [8-1:0] extension_p_i;
+logic [8-1:0] extension_n_i;
+assign extension_p_t = {8{1'b0}};
+assign extension_n_t = {8{1'b0}};
+assign extension_p_i = {8{1'b1}};
+assign extension_n_i = {8{1'b1}};
+
+IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(extension_p_i), .T(extension_p_t) );
+IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(extension_n_i), .T(extension_n_t) );
+
+
 
 assign gpio.i[15: 8] = exp_p_in;
 assign gpio.i[23:16] = exp_n_in;
