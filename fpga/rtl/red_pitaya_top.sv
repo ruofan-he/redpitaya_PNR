@@ -437,11 +437,11 @@ logic [8-1:0] extension_p_i;
 logic [8-1:0] extension_n_i;
 assign extension_p_t = {8{1'b0}};
 assign extension_n_t = {8{1'b0}};
-assign extension_p_i = {8{trig_sig_flip_flop}};
+assign extension_p_i = {8{1'b1}};
 assign extension_n_i = {8{1'b1}};
+
 IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(extension_p_i), .T(extension_p_t) );
 IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(extension_n_i), .T(extension_n_t) );
-
 
 assign gpio.i[15: 8] = exp_p_in;
 assign gpio.i[23:16] = exp_n_in;
@@ -451,13 +451,6 @@ assign gpio.i[23:16] = exp_n_in;
 ////////////////////////////////////////////////////////////////////////////////
 
 logic trig_asg_out;
-
-logic trig_sig;// Furusawa_original
-logic trig_sig_flip_flop = 0;// Furusawa_original
-
-always @(posedge trig_sig) begin
-  trig_sig_flip_flop <= ~trig_sig_flip_flop;
-end
 
 red_pitaya_scope i_scope (
   // ADC
@@ -485,10 +478,7 @@ red_pitaya_scope i_scope (
   .sys_ren       (sys[1].ren  ),
   .sys_rdata     (sys[1].rdata),
   .sys_err       (sys[1].err  ),
-  .sys_ack       (sys[1].ack  ),
-  //Furusawa_original
-  // trigger_output
-  .trig_sig      (trig_sig)
+  .sys_ack       (sys[1].ack  )
 );
 
 
