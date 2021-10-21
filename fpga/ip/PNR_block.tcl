@@ -235,6 +235,8 @@ proc create_root_design { parentCell } {
   # Create port connections
   connect_bd_net -net ADC_A_1 [get_bd_ports ADC_A] [get_bd_pins PNR_main_0/ADC_A]
   connect_bd_net -net ADC_B_1 [get_bd_ports ADC_B] [get_bd_pins PNR_main_0/ADC_B]
+  connect_bd_net -net PNR_main_0_extension_GPIO_n [get_bd_ports extension_GPIO_n] [get_bd_pins PNR_main_0/extension_GPIO_n]
+  connect_bd_net -net PNR_main_0_extension_GPIO_p [get_bd_ports extension_GPIO_p] [get_bd_pins PNR_main_0/extension_GPIO_p]
   connect_bd_net -net PNR_register_0_sys_ack [get_bd_ports sys_ack] [get_bd_pins PNR_register_0/sys_ack]
   connect_bd_net -net PNR_register_0_sys_err [get_bd_ports sys_err] [get_bd_pins PNR_register_0/sys_err]
   connect_bd_net -net PNR_register_0_sys_rdata [get_bd_ports sys_rdata] [get_bd_pins PNR_register_0/sys_rdata]
