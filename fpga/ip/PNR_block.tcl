@@ -40,7 +40,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 
 # The design that will be created by this Tcl script contains the following 
 # module references:
-# PNR_main
+# PNR_main, PNR_register
 
 # Please add the sources of those modules before sourcing this Tcl script.
 
@@ -131,6 +131,7 @@ set bCheckModules 1
 if { $bCheckModules == 1 } {
    set list_check_mods "\ 
 PNR_main\
+PNR_register\
 "
 
    set list_mods_missing ""
@@ -197,16 +198,17 @@ proc create_root_design { parentCell } {
   # Create ports
   set ADC_A [ create_bd_port -dir I -from 13 -to 0 -type data ADC_A ]
   set ADC_B [ create_bd_port -dir I -from 13 -to 0 -type data ADC_B ]
-  set ADC_CLK [ create_bd_port -dir I -type data ADC_CLK ]
-  set ADC_THRESHOLD_PHOTON1 [ create_bd_port -dir I -from 13 -to 0 -type data ADC_THRESHOLD_PHOTON1 ]
-  set ADC_THRESHOLD_PHOTON2 [ create_bd_port -dir I -from 13 -to 0 -type data ADC_THRESHOLD_PHOTON2 ]
-  set ADC_THRESHOLD_PHOTON3 [ create_bd_port -dir I -from 13 -to 0 -type data ADC_THRESHOLD_PHOTON3 ]
-  set ADC_THRESHOLD_PHOTON4 [ create_bd_port -dir I -from 13 -to 0 -type data ADC_THRESHOLD_PHOTON4 ]
-  set ADC_THRESHOLD_PHOTON5 [ create_bd_port -dir I -from 13 -to 0 -type data ADC_THRESHOLD_PHOTON5 ]
-  set ADC_THRESHOLD_PHOTON6 [ create_bd_port -dir I -from 13 -to 0 -type data ADC_THRESHOLD_PHOTON6 ]
-  set RTL_CLK [ create_bd_port -dir I -type data RTL_CLK ]
+  set clk_i [ create_bd_port -dir I clk_i ]
   set extension_GPIO_n [ create_bd_port -dir O -from 7 -to 0 extension_GPIO_n ]
   set extension_GPIO_p [ create_bd_port -dir O -from 7 -to 0 extension_GPIO_p ]
+  set rstn_i [ create_bd_port -dir I -type data rstn_i ]
+  set sys_ack [ create_bd_port -dir O -type data sys_ack ]
+  set sys_addr [ create_bd_port -dir I -from 31 -to 0 -type data sys_addr ]
+  set sys_err [ create_bd_port -dir O sys_err ]
+  set sys_rdata [ create_bd_port -dir O -from 31 -to 0 -type data sys_rdata ]
+  set sys_ren [ create_bd_port -dir I -type data sys_ren ]
+  set sys_wdata [ create_bd_port -dir I -from 31 -to 0 -type data sys_wdata ]
+  set sys_wen [ create_bd_port -dir I -type data sys_wen ]
 
   # Create instance: PNR_main_0, and set properties
   set block_name PNR_main
@@ -219,10 +221,29 @@ proc create_root_design { parentCell } {
      return 1
    }
   
+  # Create instance: PNR_register_0, and set properties
+  set block_name PNR_register
+  set block_cell_name PNR_register_0
+  if { [catch {set PNR_register_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $PNR_register_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create port connections
   connect_bd_net -net ADC_A_1 [get_bd_ports ADC_A] [get_bd_pins PNR_main_0/ADC_A]
   connect_bd_net -net ADC_B_1 [get_bd_ports ADC_B] [get_bd_pins PNR_main_0/ADC_B]
-  connect_bd_net -net ADC_CLK_1 [get_bd_ports ADC_CLK] [get_bd_pins PNR_main_0/ADC_CLK]
+  connect_bd_net -net PNR_register_0_sys_ack [get_bd_ports sys_ack] [get_bd_pins PNR_register_0/sys_ack]
+  connect_bd_net -net PNR_register_0_sys_err [get_bd_ports sys_err] [get_bd_pins PNR_register_0/sys_err]
+  connect_bd_net -net PNR_register_0_sys_rdata [get_bd_ports sys_rdata] [get_bd_pins PNR_register_0/sys_rdata]
+  connect_bd_net -net clk_i_1 [get_bd_ports clk_i] [get_bd_pins PNR_main_0/ADC_CLK] [get_bd_pins PNR_register_0/clk_i]
+  connect_bd_net -net rstn_i_1 [get_bd_ports rstn_i] [get_bd_pins PNR_register_0/rstn_i]
+  connect_bd_net -net sys_addr_1 [get_bd_ports sys_addr] [get_bd_pins PNR_register_0/sys_addr]
+  connect_bd_net -net sys_ren_1 [get_bd_ports sys_ren] [get_bd_pins PNR_register_0/sys_ren]
+  connect_bd_net -net sys_wdata_1 [get_bd_ports sys_wdata] [get_bd_pins PNR_register_0/sys_wdata]
+  connect_bd_net -net sys_wen_1 [get_bd_ports sys_wen] [get_bd_pins PNR_register_0/sys_wen]
 
   # Create address segments
 

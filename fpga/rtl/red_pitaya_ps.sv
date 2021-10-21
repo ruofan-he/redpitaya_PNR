@@ -69,14 +69,7 @@ module red_pitaya_ps (
   input   [  4-1: 0] axi1_wlen_i  , axi0_wlen_i  ,  // system write burst length
   input              axi1_wfixed_i, axi0_wfixed_i,  // system write burst type (fixed / incremental)
   output             axi1_werr_o  , axi0_werr_o  ,  // system write error
-  output             axi1_wrdy_o  , axi0_wrdy_o  ,  // system write ready
-  // PNR ADC PHOTON THRESHOLD
-  output  logic [14-1:0] ADC_THRESHOLD_PHOTON1,
-  output  logic [14-1:0] ADC_THRESHOLD_PHOTON2,
-  output  logic [14-1:0] ADC_THRESHOLD_PHOTON3,
-  output  logic [14-1:0] ADC_THRESHOLD_PHOTON4,
-  output  logic [14-1:0] ADC_THRESHOLD_PHOTON5,
-  output  logic [14-1:0] ADC_THRESHOLD_PHOTON6
+  output             axi1_wrdy_o  , axi0_wrdy_o     // system write ready
 );
 
 //------------------------------------------------------------------------------
@@ -374,14 +367,7 @@ system system_i (
   .S_AXI_HP0_awid    (hp0_saxi_awid   ),  .S_AXI_HP1_awid    (hp1_saxi_awid   ), // in 6
   .S_AXI_HP0_wid     (hp0_saxi_wid    ),  .S_AXI_HP1_wid     (hp1_saxi_wid    ), // in 6
   .S_AXI_HP0_wdata   (hp0_saxi_wdata  ),  .S_AXI_HP1_wdata   (hp1_saxi_wdata  ), // in 64
-  .S_AXI_HP0_wstrb   (hp0_saxi_wstrb  ),  .S_AXI_HP1_wstrb   (hp1_saxi_wstrb  ), // in 8
-  // PNR - photon number resolving threshold data from axi gpio
-  .ADC_THRESHOLD_PHOTON1  (ADC_THRESHOLD_PHOTON1),
-  .ADC_THRESHOLD_PHOTON2  (ADC_THRESHOLD_PHOTON2),
-  .ADC_THRESHOLD_PHOTON3  (ADC_THRESHOLD_PHOTON3),
-  .ADC_THRESHOLD_PHOTON4  (ADC_THRESHOLD_PHOTON4),
-  .ADC_THRESHOLD_PHOTON5  (ADC_THRESHOLD_PHOTON5),
-  .ADC_THRESHOLD_PHOTON6  (ADC_THRESHOLD_PHOTON6)
+  .S_AXI_HP0_wstrb   (hp0_saxi_wstrb  ),  .S_AXI_HP1_wstrb   (hp1_saxi_wstrb  ) // in 8
 );
 
 // since the PS GP0 port is AXI3 and the local bus is AXI4

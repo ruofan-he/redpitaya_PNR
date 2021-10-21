@@ -228,14 +228,6 @@ pwm_rstn <=  frstn[0] &  pll_locked;
 //  Connections to PS
 ////////////////////////////////////////////////////////////////////////////////
 
-
-logic [14-1:0] ADC_THRESHOLD_PHOTON1;
-logic [14-1:0] ADC_THRESHOLD_PHOTON2;
-logic [14-1:0] ADC_THRESHOLD_PHOTON3;
-logic [14-1:0] ADC_THRESHOLD_PHOTON4;
-logic [14-1:0] ADC_THRESHOLD_PHOTON5;
-logic [14-1:0] ADC_THRESHOLD_PHOTON6;
-
 red_pitaya_ps ps (
   .FIXED_IO_mio       (  FIXED_IO_mio                ),
   .FIXED_IO_ps_clk    (  FIXED_IO_ps_clk             ),
@@ -279,14 +271,7 @@ red_pitaya_ps ps (
   .axi1_wlen_i   (axi1_wlen   ),  .axi0_wlen_i   (axi0_wlen   ),  // system write burst length
   .axi1_wfixed_i (axi1_wfixed ),  .axi0_wfixed_i (axi0_wfixed ),  // system write burst type (fixed / incremental)
   .axi1_werr_o   (axi1_werr   ),  .axi0_werr_o   (axi0_werr   ),  // system write error
-  .axi1_wrdy_o   (axi1_wrdy   ),  .axi0_wrdy_o   (axi0_wrdy   ),  // system write ready
-  // PNR - photon number resolving threthold with axi gpio
-  .ADC_THRESHOLD_PHOTON1  (ADC_THRESHOLD_PHOTON1),
-  .ADC_THRESHOLD_PHOTON2  (ADC_THRESHOLD_PHOTON2),
-  .ADC_THRESHOLD_PHOTON3  (ADC_THRESHOLD_PHOTON3),
-  .ADC_THRESHOLD_PHOTON4  (ADC_THRESHOLD_PHOTON4),
-  .ADC_THRESHOLD_PHOTON5  (ADC_THRESHOLD_PHOTON5),
-  .ADC_THRESHOLD_PHOTON6  (ADC_THRESHOLD_PHOTON6)
+  .axi1_wrdy_o   (axi1_wrdy   ),  .axi0_wrdy_o   (axi0_wrdy   )  // system write ready
 );
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -301,9 +286,9 @@ sys_bus_interconnect #(
   .bus_s (sys)
 );
 
-// silence unused busses
+// silence unused busses sys[7]
 generate
-for (genvar i=6; i<8; i++) begin: for_sys
+for (genvar i=7; i<8; i++) begin: for_sys
   sys_bus_stub sys_bus_stub_5_7 (sys[i]);
 end: for_sys
 endgenerate
@@ -466,19 +451,19 @@ assign gpio.i[23:16] = exp_n_in;
 ////////////////////////////////////////////////////////////////////////////////
 
 PNR_block i_pnr_block (
-  .ADC_CLK      (adc_clk),        // clock
-  .ADC_A        (adc_dat[0]),     // CH1
-  .ADC_B        (adc_dat[1]),     // CH2
-// PNR - photon number resolving threshold data from axi gpio
-  .ADC_THRESHOLD_PHOTON1  (ADC_THRESHOLD_PHOTON1),
-  .ADC_THRESHOLD_PHOTON2  (ADC_THRESHOLD_PHOTON2),
-  .ADC_THRESHOLD_PHOTON3  (ADC_THRESHOLD_PHOTON3),
-  .ADC_THRESHOLD_PHOTON4  (ADC_THRESHOLD_PHOTON4),
-  .ADC_THRESHOLD_PHOTON5  (ADC_THRESHOLD_PHOTON5),
-  .ADC_THRESHOLD_PHOTON6  (ADC_THRESHOLD_PHOTON6)
+  .clk_i           (adc_clk   ),     // clock
+  .rstn_i          (adc_rstn  ),     // reset - active low
+  .ADC_A           (adc_dat[0]),     // CH1
+  .ADC_B           (adc_dat[1]),     // CH2
+  // System bus
+  .sys_addr        (sys[6].addr ),
+  .sys_wdata       (sys[6].wdata),
+  .sys_wen         (sys[6].wen  ),
+  .sys_ren         (sys[6].ren  ),
+  .sys_rdata       (sys[6].rdata),
+  .sys_err         (sys[6].err  ),
+  .sys_ack         (sys[6].ack  )
 );
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
