@@ -395,7 +395,7 @@ red_pitaya_hk i_hk (
   .clk_i           (adc_clk ),  // clock
   .rstn_i          (adc_rstn),  // reset - active low
   // LED
-  .led_o           (  led_o                      ),  // LED output
+  .led_o           ( /* led_o */                     ),  // LED output
   // global configuration
   .digital_loop    (digital_loop),
   // Expansion connector
@@ -455,6 +455,7 @@ PNR_block i_pnr_block (
   .rstn_i          (adc_rstn  ),     // reset - active low
   .ADC_A           (adc_dat[0]),     // CH1
   .ADC_B           (adc_dat[1]),     // CH2
+  .led_o           (led_o),
   // System bus
   .sys_addr        (sys[6].addr ),
   .sys_wdata       (sys[6].wdata),
