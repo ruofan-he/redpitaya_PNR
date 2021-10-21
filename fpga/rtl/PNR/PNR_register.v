@@ -41,7 +41,7 @@ module PNR_register(
    output wire [ 14-1: 0] adc_photon_threshold_4,
    output wire [ 14-1: 0] adc_photon_threshold_5,
    output wire [ 14-1: 0] adc_photon_threshold_6,
-   output wire [ 14-1: 0] adc_photon_threshold_7,
+   output wire [ 14-1: 0] adc_photon_threshold_7
     );
 
 reg [32-1:0] _sys_rdata;
