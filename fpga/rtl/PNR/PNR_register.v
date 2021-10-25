@@ -24,17 +24,21 @@ module PNR_register(
    // signals
    input  wire            clk_i           ,  //!< processing clock
    input  wire            rstn_i          ,  //!< processing reset - active low
-
-   //led test
-   output reg [8-1:0]    led_o           ,
    // system bus
    input  wire [ 32-1: 0] sys_addr        ,  //!< bus address
    input  wire [ 32-1: 0] sys_wdata       ,  //!< bus write data
    input  wire            sys_wen         ,  //!< bus write enable
    input  wire            sys_ren         ,  //!< bus read enable
-   output reg [ 32-1: 0] sys_rdata       ,  //!< bus read data
-   output reg            sys_err         ,  //!< bus error indicator
-   output reg            sys_ack         ,  //!< bus acknowledge signal
+   output reg [ 32-1: 0]  sys_rdata       ,  //!< bus read data
+   output reg             sys_err         ,  //!< bus error indicator
+   output reg             sys_ack         ,  //!< bus acknowledge signal
+   //led test
+   output reg [8-1:0]    led_o            ,
+   // misc. config
+   output reg            trig_is_adc_a    ,
+   output reg [ 14-1: 0] trig_threshold   ,
+   output reg [ 32-1: 0] trig_clearance   , // clearance to next trigger(unit is a clock duration)
+   output reg [ 32-1: 0] pnr_delay        , // trigger pnr delay(unit is a clock duration)
    //ADC_threshold for photon number resolving
    output reg [ 14-1: 0] adc_photon_threshold_1,
    output reg [ 14-1: 0] adc_photon_threshold_2,
@@ -42,7 +46,8 @@ module PNR_register(
    output reg [ 14-1: 0] adc_photon_threshold_4,
    output reg [ 14-1: 0] adc_photon_threshold_5,
    output reg [ 14-1: 0] adc_photon_threshold_6,
-   output reg [ 14-1: 0] adc_photon_threshold_7
+   output reg [ 14-1: 0] adc_photon_threshold_7,
+   output reg [ 14-1: 0] adc_photon_threshold_8
     );
 
 //---------------------------------------------------------------------------------
@@ -52,6 +57,11 @@ module PNR_register(
 always @(posedge clk_i) begin
    if (rstn_i == 1'b0) begin
       led_o    <= 8'h0 ;
+      trig_is_adc_a  <= 1'b1; // default trig source is adc_a
+      trig_threshold <= 14'b0; // default trig_threshold is 0V
+      trig_clearance <= 32'd200; // default clearance to next trigger is 1600ns
+      pnr_delay      <= 32'd100; // default delay is 800ns
+      
       adc_photon_threshold_1  <= 14'b0;
       adc_photon_threshold_2  <= 14'b0;
       adc_photon_threshold_3  <= 14'b0;
@@ -59,18 +69,25 @@ always @(posedge clk_i) begin
       adc_photon_threshold_5  <= 14'b0;
       adc_photon_threshold_6  <= 14'b0;
       adc_photon_threshold_7  <= 14'b0;
+      adc_photon_threshold_8  <= 14'b0;
 
    end
    else begin
       if (sys_wen) begin
-         if (sys_addr[20-1:0]==20'h00)    led_o  <= sys_wdata[8-1:0] ;
-         if (sys_addr[20-1:0]==20'h04)    adc_photon_threshold_1  <= sys_wdata[14-1:0] ;
-         if (sys_addr[20-1:0]==20'h08)    adc_photon_threshold_2  <= sys_wdata[14-1:0] ;
-         if (sys_addr[20-1:0]==20'h0C)    adc_photon_threshold_3  <= sys_wdata[14-1:0] ;
-         if (sys_addr[20-1:0]==20'h10)    adc_photon_threshold_4  <= sys_wdata[14-1:0] ;
-         if (sys_addr[20-1:0]==20'h14)    adc_photon_threshold_5  <= sys_wdata[14-1:0] ;
-         if (sys_addr[20-1:0]==20'h18)    adc_photon_threshold_6  <= sys_wdata[14-1:0] ;
-         if (sys_addr[20-1:0]==20'h1C)    adc_photon_threshold_7  <= sys_wdata[14-1:0] ;
+         if (sys_addr[20-1:0]==20'h00)    led_o              <= sys_wdata[ 8-1:0] ;
+         if (sys_addr[20-1:0]==20'h04)    trig_is_adc_a      <= sys_wdata[     0] ;
+         if (sys_addr[20-1:0]==20'h08)    trig_threshold     <= sys_wdata[14-1:0] ;
+         if (sys_addr[20-1:0]==20'h0C)    trig_clearance     <= sys_wdata[32-1:0] ;
+         if (sys_addr[20-1:0]==20'h10)    pnr_delay          <= sys_wdata[32-1:0] ;
+         
+         if (sys_addr[20-1:0]==20'h40)    adc_photon_threshold_1  <= sys_wdata[14-1:0] ;
+         if (sys_addr[20-1:0]==20'h44)    adc_photon_threshold_2  <= sys_wdata[14-1:0] ;
+         if (sys_addr[20-1:0]==20'h48)    adc_photon_threshold_3  <= sys_wdata[14-1:0] ;
+         if (sys_addr[20-1:0]==20'h4C)    adc_photon_threshold_4  <= sys_wdata[14-1:0] ;
+         if (sys_addr[20-1:0]==20'h50)    adc_photon_threshold_5  <= sys_wdata[14-1:0] ;
+         if (sys_addr[20-1:0]==20'h54)    adc_photon_threshold_6  <= sys_wdata[14-1:0] ;
+         if (sys_addr[20-1:0]==20'h58)    adc_photon_threshold_7  <= sys_wdata[14-1:0] ;
+         if (sys_addr[20-1:0]==20'h5C)    adc_photon_threshold_8  <= sys_wdata[14-1:0] ;
       end
    end
 end
@@ -87,13 +104,19 @@ end else begin
 
    casez (sys_addr[20-1:0])
       20'h00  : begin sys_ack <= sys_en;         sys_rdata <= {{32- 8{1'b0}}, led_o                 }              ; end
-      20'h04  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_1}              ; end
-      20'h08  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_2}              ; end
-      20'h0C  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_3}              ; end
-      20'h10  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_4}              ; end
-      20'h14  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_5}              ; end
-      20'h18  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_6}              ; end
-      20'h1C  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_7}              ; end
+      20'h04  : begin sys_ack <= sys_en;         sys_rdata <= {{32- 1{1'b0}}, trig_is_adc_a         }              ; end
+      20'h08  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, trig_threshold        }              ; end
+      20'h0C  : begin sys_ack <= sys_en;         sys_rdata <=  trig_clearance                                      ; end
+      20'h10  : begin sys_ack <= sys_en;         sys_rdata <=  pnr_delay                                           ; end
+      
+      20'h40  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_1}              ; end
+      20'h44  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_2}              ; end
+      20'h48  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_3}              ; end
+      20'h4C  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_4}              ; end
+      20'h50  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_5}              ; end
+      20'h54  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_6}              ; end
+      20'h58  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_7}              ; end
+      20'h5C  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_8}              ; end
       default : begin sys_ack <= sys_en;         sys_rdata <=  32'h0                                               ; end
    endcase
 end

@@ -40,7 +40,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 
 # The design that will be created by this Tcl script contains the following 
 # module references:
-# PNR_main, PNR_register
+# PNR_main, PNR_register, PNR_signal_selector
 
 # Please add the sources of those modules before sourcing this Tcl script.
 
@@ -132,6 +132,7 @@ if { $bCheckModules == 1 } {
    set list_check_mods "\ 
 PNR_main\
 PNR_register\
+PNR_signal_selector\
 "
 
    set list_mods_missing ""
@@ -233,15 +234,32 @@ proc create_root_design { parentCell } {
      return 1
    }
   
+  # Create instance: PNR_signal_selector_0, and set properties
+  set block_name PNR_signal_selector
+  set block_cell_name PNR_signal_selector_0
+  if { [catch {set PNR_signal_selector_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $PNR_signal_selector_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create port connections
-  connect_bd_net -net ADC_A_1 [get_bd_ports ADC_A] [get_bd_pins PNR_main_0/ADC_A]
-  connect_bd_net -net ADC_B_1 [get_bd_ports ADC_B] [get_bd_pins PNR_main_0/ADC_B]
+  connect_bd_net -net ADC_A_1 [get_bd_ports ADC_A] [get_bd_pins PNR_signal_selector_0/ADC_A]
+  connect_bd_net -net ADC_B_1 [get_bd_ports ADC_B] [get_bd_pins PNR_signal_selector_0/ADC_B]
   connect_bd_net -net PNR_main_0_extension_GPIO_n [get_bd_ports extension_GPIO_n] [get_bd_pins PNR_main_0/extension_GPIO_n]
   connect_bd_net -net PNR_main_0_extension_GPIO_p [get_bd_ports extension_GPIO_p] [get_bd_pins PNR_main_0/extension_GPIO_p]
   connect_bd_net -net PNR_register_0_led_o [get_bd_ports led_o] [get_bd_pins PNR_register_0/led_o]
+  connect_bd_net -net PNR_register_0_pnr_delay [get_bd_pins PNR_main_0/pnr_delay] [get_bd_pins PNR_register_0/pnr_delay]
   connect_bd_net -net PNR_register_0_sys_ack [get_bd_ports sys_ack] [get_bd_pins PNR_register_0/sys_ack]
   connect_bd_net -net PNR_register_0_sys_err [get_bd_ports sys_err] [get_bd_pins PNR_register_0/sys_err]
   connect_bd_net -net PNR_register_0_sys_rdata [get_bd_ports sys_rdata] [get_bd_pins PNR_register_0/sys_rdata]
+  connect_bd_net -net PNR_register_0_trig_clearance [get_bd_pins PNR_main_0/trig_clearance] [get_bd_pins PNR_register_0/trig_clearance]
+  connect_bd_net -net PNR_register_0_trig_is_adc_a [get_bd_pins PNR_register_0/trig_is_adc_a] [get_bd_pins PNR_signal_selector_0/trig_is_adc_a]
+  connect_bd_net -net PNR_register_0_trig_threshold [get_bd_pins PNR_main_0/trig_threshold] [get_bd_pins PNR_register_0/trig_threshold]
+  connect_bd_net -net PNR_signal_selector_0_pnr_source_sig [get_bd_pins PNR_main_0/pnr_source_sig] [get_bd_pins PNR_signal_selector_0/pnr_source_sig]
+  connect_bd_net -net PNR_signal_selector_0_trig_source_sig [get_bd_pins PNR_main_0/trig_source_sig] [get_bd_pins PNR_signal_selector_0/trig_source_sig]
   connect_bd_net -net clk_i_1 [get_bd_ports clk_i] [get_bd_pins PNR_main_0/ADC_CLK] [get_bd_pins PNR_register_0/clk_i]
   connect_bd_net -net rstn_i_1 [get_bd_ports rstn_i] [get_bd_pins PNR_register_0/rstn_i]
   connect_bd_net -net sys_addr_1 [get_bd_ports sys_addr] [get_bd_pins PNR_register_0/sys_addr]

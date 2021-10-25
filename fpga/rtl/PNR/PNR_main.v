@@ -21,9 +21,15 @@
 
 
 module PNR_main(
+    // signal
     input ADC_CLK,
-    input [13:0] ADC_A,
-    input [13:0] ADC_B,
+    input [14-1:0] trig_source_sig,
+    input [14-1:0] pnr_source_sig,
+    // config
+    input [14-1:0] trig_threshold, // threshold of trigger
+    input [32-1:0] trig_clearance   , // clearance to next trigger(unit is a clock duration)
+    input [32-1:0] pnr_delay        , // trigger pnr delay(unit is a clock duration)
+    // output
     output [8-1:0] extension_GPIO_p,
     output [8-1:0] extension_GPIO_n
     );
