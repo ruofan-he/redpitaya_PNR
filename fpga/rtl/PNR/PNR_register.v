@@ -86,15 +86,15 @@ end else begin
    sys_err <= 1'b0 ;
 
    casez (sys_addr[20-1:0])
-      20'h00  : begin sys_ack <= sys_en;         sys_rdata <= {{32- 8{1'b00}}, led_o                 }              ; end
-      20'h04  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b04}}, adc_photon_threshold_1}              ; end
-      20'h08  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b08}}, adc_photon_threshold_2}              ; end
-      20'h0C  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0C}}, adc_photon_threshold_3}              ; end
-      20'h10  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b10}}, adc_photon_threshold_4}              ; end
-      20'h14  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b14}}, adc_photon_threshold_5}              ; end
-      20'h18  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b18}}, adc_photon_threshold_6}              ; end
-      20'h1C  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b1C}}, adc_photon_threshold_7}              ; end
-      default : begin sys_ack <= sys_en;         sys_rdata <=  32'h0                                                ; end
+      20'h00  : begin sys_ack <= sys_en;         sys_rdata <= {{32- 8{1'b0}}, led_o                 }              ; end
+      20'h04  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_1}              ; end
+      20'h08  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_2}              ; end
+      20'h0C  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_3}              ; end
+      20'h10  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_4}              ; end
+      20'h14  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_5}              ; end
+      20'h18  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_6}              ; end
+      20'h1C  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_7}              ; end
+      default : begin sys_ack <= sys_en;         sys_rdata <=  32'h0                                               ; end
    endcase
 end
 
