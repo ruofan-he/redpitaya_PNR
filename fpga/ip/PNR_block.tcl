@@ -261,7 +261,7 @@ proc create_root_design { parentCell } {
   connect_bd_net -net PNR_signal_selector_0_pnr_source_sig [get_bd_pins PNR_main_0/pnr_source_sig] [get_bd_pins PNR_signal_selector_0/pnr_source_sig]
   connect_bd_net -net PNR_signal_selector_0_trig_source_sig [get_bd_pins PNR_main_0/trig_source_sig] [get_bd_pins PNR_signal_selector_0/trig_source_sig]
   connect_bd_net -net clk_i_1 [get_bd_ports clk_i] [get_bd_pins PNR_main_0/ADC_CLK] [get_bd_pins PNR_register_0/clk_i]
-  connect_bd_net -net rstn_i_1 [get_bd_ports rstn_i] [get_bd_pins PNR_register_0/rstn_i]
+  connect_bd_net -net rstn_i_1 [get_bd_ports rstn_i] [get_bd_pins PNR_main_0/rstn_i] [get_bd_pins PNR_register_0/rstn_i]
   connect_bd_net -net sys_addr_1 [get_bd_ports sys_addr] [get_bd_pins PNR_register_0/sys_addr]
   connect_bd_net -net sys_ren_1 [get_bd_ports sys_ren] [get_bd_pins PNR_register_0/sys_ren]
   connect_bd_net -net sys_wdata_1 [get_bd_ports sys_wdata] [get_bd_pins PNR_register_0/sys_wdata]
