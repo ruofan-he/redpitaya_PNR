@@ -435,10 +435,8 @@ logic [8-1:0] extension_p_t;
 logic [8-1:0] extension_n_t;
 logic [8-1:0] extension_p_i;
 logic [8-1:0] extension_n_i;
-assign extension_p_t = {8{1'b0}};
+assign extension_p_t = {8{1'b0}}; // GPIO output mode
 assign extension_n_t = {8{1'b0}};
-assign extension_p_i = {8{1'b1}};
-assign extension_n_i = {8{1'b1}};
 
 IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(extension_p_i), .T(extension_p_t) );
 IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(extension_n_i), .T(extension_n_t) );
@@ -456,6 +454,8 @@ PNR_block i_pnr_block (
   .ADC_A           (adc_dat[0]),     // CH1
   .ADC_B           (adc_dat[1]),     // CH2
   .led_o           (led_o),
+  .extension_GPIO_n(extension_n_i),
+  .extension_GPIO_p(extension_p_i),
   // System bus
   .sys_addr        (sys[6].addr ),
   .sys_wdata       (sys[6].wdata),
