@@ -24,95 +24,56 @@ module PNR_main(
     // signal
     input ADC_CLK,
     input rstn_i,
-    input [14-1:0] trig_source_sig,
+    input trigger,
+    input delayed_trigger,
     input [14-1:0] pnr_source_sig,
-    // config
-    input [14-1:0] trig_threshold   , // threshold of trigger
-    input [14-1:0] trig_hysteresis  , // schmitt trigger, hysterisis
-    input [32-1:0] trig_clearance   , // clearance to next trigger(unit is a clock duration)
-    input          trig_is_posedge  , // trigger with positive edge
-    input [32-1:0] pnr_delay        , // trigger pnr delay(unit is a clock duration)
+    //ADC_threshold for photon number resolving
+    input [14-1:0] adc_photon_threshold_1,
+    input [14-1:0] adc_photon_threshold_2,
+    input [14-1:0] adc_photon_threshold_3,
+    input [14-1:0] adc_photon_threshold_4,
+    input [14-1:0] adc_photon_threshold_5,
+    input [14-1:0] adc_photon_threshold_6,
+    input [14-1:0] adc_photon_threshold_7,
+    input [14-1:0] adc_photon_threshold_8,
     // output
     output [8-1:0] extension_GPIO_p,
     output [8-1:0] extension_GPIO_n
     );
-    
-assign extension_GPIO_p = 8'b0;
+
+
+reg [8-1:0] segment_photon_num;
+reg [8-1:0] level_comparation;
+
+always @(posedge ADC_CLK)
+if ( (rstn_i == 1'b0) || trigger ) begin
+    segment_photon_num <= 8'b0;
+end else begin
+    level_comparation[0] <=  $signed(adc_photon_threshold_1) < $signed(pnr_source_sig);
+    level_comparation[1] <=  $signed(adc_photon_threshold_2) < $signed(pnr_source_sig);
+    level_comparation[2] <=  $signed(adc_photon_threshold_3) < $signed(pnr_source_sig);
+    level_comparation[3] <=  $signed(adc_photon_threshold_4) < $signed(pnr_source_sig);
+    level_comparation[4] <=  $signed(adc_photon_threshold_5) < $signed(pnr_source_sig);
+    level_comparation[5] <=  $signed(adc_photon_threshold_6) < $signed(pnr_source_sig);
+    level_comparation[6] <=  $signed(adc_photon_threshold_7) < $signed(pnr_source_sig);
+    level_comparation[7] <=  $signed(adc_photon_threshold_8) < $signed(pnr_source_sig);
+end
+
+
+always @(posedge delayed_trigger)
+begin
+    segment_photon_num[0] <=                         ~level_comparation[0];
+    segment_photon_num[1] <= level_comparation[0] && ~level_comparation[1];
+    segment_photon_num[2] <= level_comparation[1] && ~level_comparation[2];
+    segment_photon_num[3] <= level_comparation[2] && ~level_comparation[3];
+    segment_photon_num[4] <= level_comparation[3] && ~level_comparation[4];
+    segment_photon_num[5] <= level_comparation[4] && ~level_comparation[5];
+    segment_photon_num[6] <= level_comparation[5] && ~level_comparation[6];
+    segment_photon_num[7] <= level_comparation[6] && ~level_comparation[7];
+end
+
+
+assign extension_GPIO_p = segment_photon_num;
 assign extension_GPIO_n = 8'b0;
-    
 
-//---------------------------------------------------------------------------------
-//  Trigger created from input signal
-
-reg  [  2-1: 0] adc_scht_p    ;
-reg  [  2-1: 0] adc_scht_n    ;
-wire [ 14-1: 0] set_tresh     ;
-reg  [ 14-1: 0] set_treshp    ;
-reg  [ 14-1: 0] set_treshm    ;
-wire [ 14-1: 0] set_hyst      ;
-reg             adc_trig_p    ;
-reg             adc_trig_n    ;
-
-assign set_tresh = trig_threshold;
-assign set_hyst  = trig_hysteresis;
-
-always @(posedge ADC_CLK)
-if (rstn_i == 1'b0) begin
-   adc_scht_p  <=  2'h0 ;
-   adc_scht_n  <=  2'h0 ;
-   adc_trig_p  <=  1'b0 ;
-   adc_trig_n  <=  1'b0 ;
-end else begin
-   set_treshp <= set_tresh + set_hyst ; // calculate positive
-   set_treshm <= set_tresh - set_hyst ; // and negative treshold
-
-           if ($signed(trig_source_sig) >= $signed(set_tresh ))      adc_scht_p[0] <= 1'b1 ;  // treshold reached
-      else if ($signed(trig_source_sig) <  $signed(set_treshm))      adc_scht_p[0] <= 1'b0 ;  // wait until it goes under hysteresis
-           if ($signed(trig_source_sig) <= $signed(set_tresh ))      adc_scht_n[0] <= 1'b1 ;  // treshold reached
-      else if ($signed(trig_source_sig) >  $signed(set_treshp))      adc_scht_n[0] <= 1'b0 ;  // wait until it goes over hysteresis
-
-
-   adc_scht_p[1] <= adc_scht_p[0] ;
-   adc_scht_n[1] <= adc_scht_n[0] ;
-
-   adc_trig_p <= adc_scht_p[0] && !adc_scht_p[1] ; // make 1 cyc pulse 
-   adc_trig_n <= adc_scht_n[0] && !adc_scht_n[1] ;
-end
-
-
-
-//---------------------------------------------------------------------------------
-//  trigger timing control
-//  - delay
-//  - clearance
-
-wire         trig          ;
-reg [32-1:0] counter       ;
-reg [2-1: 0] counter_scht  ;
-reg          is_idle       ;
-reg          delayed_trig  ;
-
-assign trig = trig_is_posedge ? adc_trig_p : adc_trig_n;
-
-always @(posedge ADC_CLK)
-if (rstn_i == 1'b0) begin
-   counter      <= 0;
-   is_idle      <= 1'b1;
-   delayed_trig <= 1'b0;
-   counter_scht <= 2'b0;
-end else begin
-   counter <= counter + 1;
-   if (counter > trig_clearance) is_idle <= 1'b1;
-   if (counter > pnr_delay) counter_scht[0] <= 1'b1;
-                       else counter_scht[0] <= 1'b0;
-   counter_scht[1] <= counter_scht[0] ;
-   delayed_trig <= counter_scht[0] && !counter_scht[1] && !is_idle;
-end
-
-always @(posedge trig)
-if (is_idle) begin
-    counter <= 0;
-    is_idle <= 1'b0;
-end
-    
 endmodule
