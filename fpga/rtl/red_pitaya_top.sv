@@ -271,7 +271,7 @@ red_pitaya_ps ps (
   .axi1_wlen_i   (axi1_wlen   ),  .axi0_wlen_i   (axi0_wlen   ),  // system write burst length
   .axi1_wfixed_i (axi1_wfixed ),  .axi0_wfixed_i (axi0_wfixed ),  // system write burst type (fixed / incremental)
   .axi1_werr_o   (axi1_werr   ),  .axi0_werr_o   (axi0_werr   ),  // system write error
-  .axi1_wrdy_o   (axi1_wrdy   ),  .axi0_wrdy_o   (axi0_wrdy   )   // system write ready
+  .axi1_wrdy_o   (axi1_wrdy   ),  .axi0_wrdy_o   (axi0_wrdy   )  // system write ready
 );
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -286,9 +286,9 @@ sys_bus_interconnect #(
   .bus_s (sys)
 );
 
-// silence unused busses
+// silence unused busses sys[7]
 generate
-for (genvar i=6; i<8; i++) begin: for_sys
+for (genvar i=7; i<8; i++) begin: for_sys
   sys_bus_stub sys_bus_stub_5_7 (sys[i]);
 end: for_sys
 endgenerate
@@ -395,7 +395,7 @@ red_pitaya_hk i_hk (
   .clk_i           (adc_clk ),  // clock
   .rstn_i          (adc_rstn),  // reset - active low
   // LED
-  .led_o           (  led_o                      ),  // LED output
+  .led_o           ( /* led_o */                     ),  // LED output
   // global configuration
   .digital_loop    (digital_loop),
   // Expansion connector
@@ -435,16 +435,37 @@ logic [8-1:0] extension_p_t;
 logic [8-1:0] extension_n_t;
 logic [8-1:0] extension_p_i;
 logic [8-1:0] extension_n_i;
-assign extension_p_t = {8{1'b0}};
+assign extension_p_t = {8{1'b0}}; // GPIO output mode
 assign extension_n_t = {8{1'b0}};
-assign extension_p_i = {8{1'b1}};
-assign extension_n_i = {8{1'b1}};
 
 IOBUF i_iobufp [8-1:0] (.O(exp_p_in), .IO(exp_p_io), .I(extension_p_i), .T(extension_p_t) );
 IOBUF i_iobufn [8-1:0] (.O(exp_n_in), .IO(exp_n_io), .I(extension_n_i), .T(extension_n_t) );
 
 assign gpio.i[15: 8] = exp_p_in;
 assign gpio.i[23:16] = exp_n_in;
+
+////////////////////////////////////////////////////////////////////////////////
+// PNR - photon number resolving block
+////////////////////////////////////////////////////////////////////////////////
+
+PNR_block i_pnr_block (
+  .clk_i           (adc_clk   ),     // clock
+  .rstn_i          (adc_rstn  ),     // reset - active low
+  .ADC_A           (adc_dat[0]),     // CH1
+  .ADC_B           (adc_dat[1]),     // CH2
+  .led_o           (led_o),
+  .extension_GPIO_n(extension_n_i),
+  .extension_GPIO_p(extension_p_i),
+  // System bus
+  .sys_addr        (sys[6].addr ),
+  .sys_wdata       (sys[6].wdata),
+  .sys_wen         (sys[6].wen  ),
+  .sys_ren         (sys[6].ren  ),
+  .sys_rdata       (sys[6].rdata),
+  .sys_err         (sys[6].err  ),
+  .sys_ack         (sys[6].ack  )
+);
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // oscilloscope

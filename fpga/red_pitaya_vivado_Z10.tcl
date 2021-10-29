@@ -77,6 +77,11 @@ add_files -fileset constrs_1      $path_sdc/red_pitaya.xdc
 add_files -fileset constrs_1      $path_sdc/red_pitaya_clock.xdc
 
 ################################################################################
+# before generate user BD, All source must be enabled.
+################################################################################
+set_property source_mgmt_mode All [current_project]
+
+################################################################################
 # create user generated BD
 ################################################################################
 
