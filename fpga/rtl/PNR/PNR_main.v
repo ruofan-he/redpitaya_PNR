@@ -57,14 +57,16 @@ end else begin
     level_comparation[5] <=  $signed(adc_photon_threshold_6) < $signed(pnr_source_sig);
     level_comparation[6] <=  $signed(adc_photon_threshold_7) < $signed(pnr_source_sig);
     level_comparation[7] <=  $signed(adc_photon_threshold_8) < $signed(pnr_source_sig);
-    segment_photon_num[0] <=                         ~level_comparation[0] && delayed_trigger;
-    segment_photon_num[1] <= level_comparation[0] && ~level_comparation[1] && delayed_trigger;
-    segment_photon_num[2] <= level_comparation[1] && ~level_comparation[2] && delayed_trigger;
-    segment_photon_num[3] <= level_comparation[2] && ~level_comparation[3] && delayed_trigger;
-    segment_photon_num[4] <= level_comparation[3] && ~level_comparation[4] && delayed_trigger;
-    segment_photon_num[5] <= level_comparation[4] && ~level_comparation[5] && delayed_trigger;
-    segment_photon_num[6] <= level_comparation[5] && ~level_comparation[6] && delayed_trigger;
-    segment_photon_num[7] <= level_comparation[6] && ~level_comparation[7] && delayed_trigger;
+    if (delayed_trigger) begin
+        segment_photon_num[0] <=                         ~level_comparation[0];
+        segment_photon_num[1] <= level_comparation[0] && ~level_comparation[1];
+        segment_photon_num[2] <= level_comparation[1] && ~level_comparation[2];
+        segment_photon_num[3] <= level_comparation[2] && ~level_comparation[3];
+        segment_photon_num[4] <= level_comparation[3] && ~level_comparation[4];
+        segment_photon_num[5] <= level_comparation[4] && ~level_comparation[5];
+        segment_photon_num[6] <= level_comparation[5] && ~level_comparation[6];
+        segment_photon_num[7] <= level_comparation[6] && ~level_comparation[7];
+    end
 end
 
 
