@@ -35,9 +35,7 @@ module PNR_delayed_trigger(
     output trigger,
     output delayed_trigger
     );
-    
-assign extension_GPIO_p = 8'b0;
-assign extension_GPIO_n = 8'b0;
+
     
 
 //---------------------------------------------------------------------------------
@@ -87,25 +85,25 @@ end
 
 wire         trig          ;
 reg [32-1:0] counter       ;
-reg [2-1: 0] counter_scht  ;
-reg          is_idle       ;
-reg          delayed_trig  ;
+reg          counter_ratch  ;
+reg          is_idle;
+wire          delayed_trig  ;
 
 assign trig = trig_is_posedge ? adc_trig_p : adc_trig_n;
 
 always @(posedge ADC_CLK)
 if (rstn_i == 1'b0) begin
-   counter      <= 0;
-   is_idle      <= 1'b1;
-   delayed_trig <= 1'b0;
-   counter_scht <= 2'b0;
+   counter         <= 0;
+   is_idle         <= 1'b1;
+   counter_ratch   <= 1'b0;
 end else begin
-   counter         <= (trig && is_idle) ? 0 : counter + 1;
-   is_idle         <= (trig && is_idle) ? 1'b0 : (counter > trig_clearance) && (counter > pnr_delay) || is_idle;
-   counter_scht[0] <= (counter > pnr_delay);
-   counter_scht[1] <= counter_scht[0] ;
-   delayed_trig    <= counter_scht[0] && !counter_scht[1] && !is_idle;
+   counter         <= (trig && is_idle) ? 0    : counter + 1;
+   is_idle         <= (trig && is_idle) ? 1'b0 : (counter >= trig_clearance) && (counter >= pnr_delay) || is_idle;
+   counter_ratch   <= (trig && is_idle) ? 1'b0 : (counter >= pnr_delay);
 end
+
+assign delayed_trig = (counter >= pnr_delay) && !counter_ratch && !is_idle;
+
 
 assign trigger = trig;
 assign delayed_trigger = delayed_trig;
