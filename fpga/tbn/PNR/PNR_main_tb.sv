@@ -33,11 +33,10 @@ always @(posedge clk) begin
     counter <= counter + 1;
     sin_counter <= sin_counter + 1;
     sin_value <= $rtoi( 4000 * $sin(TWO_PI * f * sin_counter * 8E-9) ) + 4000;
-    casez (counter+1)
-      50      : sim_trig <= 1;
-      100      : sim_d_trig <= 1;
-      default : begin sim_trig <= 0; sim_d_trig <= 0 ; end
-   endcase
+    if ((counter + 1) == 50) sim_trig   <= 1;
+                        else sim_trig   <= 0;
+    if ((counter + 1) == 60) sim_d_trig <= 1;
+                        else sim_d_trig <= 0;    
 end
 
 

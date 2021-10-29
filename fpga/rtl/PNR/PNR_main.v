@@ -43,31 +43,35 @@ module PNR_main(
 
 
 reg [8-1:0] segment_photon_num;
-reg [8-1:0] level_comparation;
+wire [8-1:0] level_comparation;
+
+assign level_comparation[0] =  $signed(adc_photon_threshold_1) < $signed(pnr_source_sig);
+assign level_comparation[1] =  $signed(adc_photon_threshold_2) < $signed(pnr_source_sig);
+assign level_comparation[2] =  $signed(adc_photon_threshold_3) < $signed(pnr_source_sig);
+assign level_comparation[3] =  $signed(adc_photon_threshold_4) < $signed(pnr_source_sig);
+assign level_comparation[4] =  $signed(adc_photon_threshold_5) < $signed(pnr_source_sig);
+assign level_comparation[5] =  $signed(adc_photon_threshold_6) < $signed(pnr_source_sig);
+assign level_comparation[6] =  $signed(adc_photon_threshold_7) < $signed(pnr_source_sig);
+assign level_comparation[7] =  $signed(adc_photon_threshold_8) < $signed(pnr_source_sig);
+
 
 always @(posedge ADC_CLK)
 if ( (rstn_i == 1'b0) || trigger ) begin
     segment_photon_num <= 8'b0;
 end else begin
-    level_comparation[0] <=  $signed(adc_photon_threshold_1) < $signed(pnr_source_sig);
-    level_comparation[1] <=  $signed(adc_photon_threshold_2) < $signed(pnr_source_sig);
-    level_comparation[2] <=  $signed(adc_photon_threshold_3) < $signed(pnr_source_sig);
-    level_comparation[3] <=  $signed(adc_photon_threshold_4) < $signed(pnr_source_sig);
-    level_comparation[4] <=  $signed(adc_photon_threshold_5) < $signed(pnr_source_sig);
-    level_comparation[5] <=  $signed(adc_photon_threshold_6) < $signed(pnr_source_sig);
-    level_comparation[6] <=  $signed(adc_photon_threshold_7) < $signed(pnr_source_sig);
-    level_comparation[7] <=  $signed(adc_photon_threshold_8) < $signed(pnr_source_sig);
     if (delayed_trigger) begin
-        segment_photon_num[0] <=                         ~level_comparation[0];
-        segment_photon_num[1] <= level_comparation[0] && ~level_comparation[1];
-        segment_photon_num[2] <= level_comparation[1] && ~level_comparation[2];
+        segment_photon_num[0] <=                         ~level_comparation[0]; // phton 0 or less 
+        segment_photon_num[1] <= level_comparation[0] && ~level_comparation[1]; // photon 1
+        segment_photon_num[2] <= level_comparation[1] && ~level_comparation[2]; 
         segment_photon_num[3] <= level_comparation[2] && ~level_comparation[3];
         segment_photon_num[4] <= level_comparation[3] && ~level_comparation[4];
         segment_photon_num[5] <= level_comparation[4] && ~level_comparation[5];
-        segment_photon_num[6] <= level_comparation[5] && ~level_comparation[6];
-        segment_photon_num[7] <= level_comparation[6] && ~level_comparation[7];
+        segment_photon_num[6] <= level_comparation[5] && ~level_comparation[6]; // photon 6
+        segment_photon_num[7] <= level_comparation[6]                         ; // photon 7 or more
     end
 end
+
+
 
 
 
