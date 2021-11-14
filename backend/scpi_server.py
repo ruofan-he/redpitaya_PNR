@@ -102,6 +102,9 @@ class SCPIServerExample(CmdTCPServer):
         else:
             return 'unknown cmd'
 
+
+# ipv4 = os.popen('ip addr show eth0 | grep "\<inet\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[1])
     parser.add_argument('--port', type=int, default=5025, help='TCP port to listen to.')

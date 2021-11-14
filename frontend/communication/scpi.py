@@ -26,3 +26,4 @@ class SCPI_mannager():
 
 some = SCPI_mannager()
 some.idn()
+
