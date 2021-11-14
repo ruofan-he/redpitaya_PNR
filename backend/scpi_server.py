@@ -88,13 +88,17 @@ class CmdTCPServer(socketserver.ThreadingTCPServer):
         """
         raise NotImplemented
 
+
+
+# for connection test
 class SCPIServerExample(CmdTCPServer):
 
-    def process(self, cmd):
+    def process(self, cmd: str):
         """
         This is the method to process each SCPI command
         received from the client.
         """
+
         if cmd.startswith('*IDN?'):
             return self.name
         if cmd.startswith('READ?'):
@@ -102,6 +106,54 @@ class SCPIServerExample(CmdTCPServer):
         else:
             return 'unknown cmd'
 
+address_dict = {
+    'led_o'          :0x40600000,
+    'trig_is_adc_a'  :0x40600004,
+    'trig_threshold' :0x40600008,
+    'trig_hysteresis':0x4060000C,
+
+    'trig_clearance' :0x40600010,
+    'trig_is_posedge':0x40600014,
+    'pnr_delay'      :0x40600018,
+
+    'photon1'        :0x40600040,
+    'photon2'        :0x40600044,
+    'photon3'        :0x40600048,
+    'photon4'        :0x4060004C,
+ 
+    'photon5'        :0x40600050,
+    'photon6'        :0x40600054,
+    'photon7'        :0x40600058,
+    'photon8'        :0x4060005C
+}
+
+
+# for redpitaya PNR scpi server 
+class SCPIServerPNR(CmdTCPServer):
+
+    def process(self, cmd: str):
+        if cmd.startswith('*IDN?'):
+            return self.name
+        if cmd.startswith('Set:Threshold:'): # Set:Threshold:photon1 10000
+            target = cmd.lstrip('Set:Threshold:')
+            try:
+                success = set_threshold(target)
+            except:
+                success = False
+            return 'yes' if success else 'no'
+        else:
+            return 'unknown cmd'
+
+def set_threshold(cmd: str):
+    from .monitor import write_value
+    cmd_s = cmd.split(' ')
+    assert len(cmd_s) == 2
+    assert cmd_s[0] in address_dict.keys()
+    target = cmd_s[0]
+    value = int(cmd_s[1]) # -8192 .. 8191
+    
+    return True
+    
 
 # ipv4 = os.popen('ip addr show eth0 | grep "\<inet\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
 
@@ -111,11 +163,15 @@ def main():
     parser.add_argument('--host', default='localhost', help='The host / IP address to listen at.')
     parser.add_argument('--loglevel', default='INFO', help='log level',
         choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'])
+    parser.add_argument('-t','--test', action='store_true')
     args = parser.parse_args()
     logging.basicConfig(format='%(message)s', level=args.loglevel.upper())
     print(args.host)
     print(args.port)
-    scpi_server = SCPIServerExample((args.host, args.port))
+    if args.test:
+        scpi_server = SCPIServerExample((args.host, args.port))
+    else:
+        scpi_server = SCPIServerPNR((args.host, args.port))
     try:
         scpi_server.serve_forever()
     except KeyboardInterrupt:

@@ -53,7 +53,7 @@
        <property name="title">
         <string>Timing control</string>
        </property>
-       <widget class="QLabel" name="label_interval_clearance">
+       <widget class="QLabel" name="label_trigger_clearance">
         <property name="geometry">
          <rect>
           <x>10</x>
@@ -63,7 +63,7 @@
          </rect>
         </property>
         <property name="text">
-         <string>interval clearance</string>
+         <string>trigger clearance</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_trigger_delay">
@@ -98,7 +98,7 @@
          <number>1000000000</number>
         </property>
        </widget>
-       <widget class="QSpinBox" name="spinBox_interval_clearance">
+       <widget class="QSpinBox" name="spinBox_trigger_clearance">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -130,7 +130,7 @@
          <string>= X ns</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_interval_clearance_display">
+       <widget class="QLabel" name="label_trigger_clearance_display">
         <property name="geometry">
          <rect>
           <x>230</x>
@@ -303,7 +303,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>40</y>
+          <y>20</y>
           <width>111</width>
           <height>20</height>
          </rect>
@@ -316,7 +316,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>70</y>
+          <y>50</y>
           <width>111</width>
           <height>20</height>
          </rect>
@@ -329,7 +329,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>100</y>
+          <y>80</y>
           <width>111</width>
           <height>20</height>
          </rect>
@@ -345,7 +345,7 @@
         <property name="geometry">
          <rect>
           <x>120</x>
-          <y>40</y>
+          <y>20</y>
           <width>101</width>
           <height>21</height>
          </rect>
@@ -361,7 +361,7 @@
         <property name="geometry">
          <rect>
           <x>230</x>
-          <y>40</y>
+          <y>20</y>
           <width>121</width>
           <height>20</height>
          </rect>
@@ -377,7 +377,7 @@
         <property name="geometry">
          <rect>
           <x>120</x>
-          <y>70</y>
+          <y>50</y>
           <width>101</width>
           <height>21</height>
          </rect>
@@ -396,7 +396,7 @@
         <property name="geometry">
          <rect>
           <x>120</x>
-          <y>100</y>
+          <y>80</y>
           <width>101</width>
           <height>21</height>
          </rect>
@@ -412,7 +412,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>130</y>
+          <y>110</y>
           <width>111</width>
           <height>20</height>
          </rect>
@@ -425,7 +425,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>160</y>
+          <y>140</y>
           <width>111</width>
           <height>20</height>
          </rect>
@@ -438,7 +438,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>190</y>
+          <y>170</y>
           <width>111</width>
           <height>20</height>
          </rect>
@@ -451,7 +451,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>220</y>
+          <y>200</y>
           <width>111</width>
           <height>20</height>
          </rect>
@@ -467,7 +467,7 @@
         <property name="geometry">
          <rect>
           <x>120</x>
-          <y>130</y>
+          <y>110</y>
           <width>101</width>
           <height>21</height>
          </rect>
@@ -486,7 +486,7 @@
         <property name="geometry">
          <rect>
           <x>120</x>
-          <y>160</y>
+          <y>140</y>
           <width>101</width>
           <height>21</height>
          </rect>
@@ -505,7 +505,7 @@
         <property name="geometry">
          <rect>
           <x>120</x>
-          <y>190</y>
+          <y>170</y>
           <width>101</width>
           <height>21</height>
          </rect>
@@ -524,7 +524,7 @@
         <property name="geometry">
          <rect>
           <x>120</x>
-          <y>220</y>
+          <y>200</y>
           <width>101</width>
           <height>21</height>
          </rect>
@@ -540,7 +540,7 @@
         <property name="geometry">
          <rect>
           <x>230</x>
-          <y>70</y>
+          <y>50</y>
           <width>121</width>
           <height>20</height>
          </rect>
@@ -553,7 +553,7 @@
         <property name="geometry">
          <rect>
           <x>230</x>
-          <y>100</y>
+          <y>80</y>
           <width>121</width>
           <height>20</height>
          </rect>
@@ -566,7 +566,7 @@
         <property name="geometry">
          <rect>
           <x>230</x>
-          <y>130</y>
+          <y>110</y>
           <width>121</width>
           <height>20</height>
          </rect>
@@ -579,7 +579,7 @@
         <property name="geometry">
          <rect>
           <x>230</x>
-          <y>160</y>
+          <y>140</y>
           <width>121</width>
           <height>20</height>
          </rect>
@@ -592,7 +592,7 @@
         <property name="geometry">
          <rect>
           <x>230</x>
-          <y>190</y>
+          <y>170</y>
           <width>121</width>
           <height>20</height>
          </rect>
@@ -605,7 +605,52 @@
         <property name="geometry">
          <rect>
           <x>230</x>
-          <y>220</y>
+          <y>200</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>= X V</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon8">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>230</y>
+          <width>111</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Photon8</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="spinBox_photon8">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>230</y>
+          <width>101</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>-8192</number>
+        </property>
+        <property name="maximum">
+         <number>8191</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon8_display">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>230</y>
           <width>121</width>
           <height>20</height>
          </rect>
