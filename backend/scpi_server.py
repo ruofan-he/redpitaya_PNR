@@ -106,7 +106,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[1])
     parser.add_argument('--port', type=int, default=5025, help='TCP port to listen to.')
     parser.add_argument('--host', default='localhost', help='The host / IP address to listen at.')
-    parser.add_argument('--loglevel', default='DEBUG', help='log level',
+    parser.add_argument('--loglevel', default='INFO', help='log level',
         choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'])
     args = parser.parse_args()
     logging.basicConfig(format='%(message)s', level=args.loglevel.upper())
