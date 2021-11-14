@@ -9,7 +9,7 @@ class SCPI_mannager():
     def ask(self, command):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             try:
-                s.settimeout(5)
+                s.settimeout(2)
                 s.connect((self.host, self.port))
                 s.send(command)
                 return s.recv(1024)
