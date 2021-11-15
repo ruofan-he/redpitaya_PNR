@@ -116,11 +116,15 @@ class Top_window(QtWidgets.QMainWindow):
         self.groupBox_threshold.setEnabled(bool)
 
     def push_connect(self):
-        self.pushButton_connect.setEnabled(False)
-        self.pushButton_disconnect.setEnabled(True)
-        self.toggle_config_input(True)
-        self.scpi_mannager = SCPI_mannager(host=self.lineEdit_ip.text().strip(), port=int(self.lineEdit_port.text()))
-        self.scpi_mannager.idn()
+        try:
+            self.scpi_mannager = SCPI_mannager(host=self.lineEdit_ip.text().strip(), port=int(self.lineEdit_port.text()))
+            self.scpi_mannager.idn()
+            self.pushButton_connect.setEnabled(False)
+            self.pushButton_disconnect.setEnabled(True)
+            self.toggle_config_input(True)
+        except Exception as e:
+            print(e)
+            pass
 
     def push_disconnect(self):
         self.pushButton_disconnect.setEnabled(False)
