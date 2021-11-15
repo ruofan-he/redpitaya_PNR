@@ -228,12 +228,15 @@ def main():
     parser.add_argument('-t','--test', action='store_true')
     args = parser.parse_args()
     logging.basicConfig(format='%(message)s', level=args.loglevel.upper())
-    print(args.host)
-    print(args.port)
     if args.test:
         scpi_server = SCPIServerExample((args.host, args.port))
     else:
+        import os
+        ipv4 = os.popen('ip addr show eth0 | grep "\<inet\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
+        args.host = ipv4
         scpi_server = SCPIServerPNR((args.host, args.port))
+    print(args.host)
+    print(args.port)
     try:
         scpi_server.serve_forever()
     except KeyboardInterrupt:

@@ -31,7 +31,7 @@ class Top_window(QtWidgets.QMainWindow):
         self.pushButton_connect.clicked.connect(self.push_connect)
         self.pushButton_disconnect.clicked.connect(self.push_disconnect)
 
-
+        self.lineEdit_port.setText('5025')
 
         def trigger_level_slider_change(value):
             self.spinBox_trigger_level.setValue(value)
@@ -118,7 +118,8 @@ class Top_window(QtWidgets.QMainWindow):
     def push_connect(self):
         try:
             self.scpi_mannager = SCPI_mannager(host=self.lineEdit_ip.text().strip(), port=int(self.lineEdit_port.text()))
-            self.scpi_mannager.idn()
+            result = self.scpi_mannager.idn()
+            if result == None: raise Exception('fail for IDN')
             self.pushButton_connect.setEnabled(False)
             self.pushButton_disconnect.setEnabled(True)
             self.toggle_config_input(True)

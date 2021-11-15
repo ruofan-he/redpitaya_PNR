@@ -13,8 +13,11 @@ class SCPI_mannager():
                 s.connect((self.host, self.port))
                 if type(command) == str:
                     command = command.encode()
+                print(command)
                 s.send(command)
-                return s.recv(1024)
+                result = s.recv(1024)
+                print(result)
+                return result
             except socket.timeout:
                 print('timeout')
             except ConnectionError:
@@ -23,11 +26,10 @@ class SCPI_mannager():
 
     def idn(self):
         result = self.ask(b'*IDN?\n')
-        print(result)
+        return result
 
     def set_photon_threshold(self,num: int, value: int):
-        result = self.ask(f'Set:Threshold:photon{num} {value}\n')
-        print(result)
+        self.ask(f'Set:Threshold:photon{num} {value}\n')
 
     def read_photon_threshold(self,num: int):
         result = self.ask(f'Read:Threshold:photon{num}\n')
@@ -38,8 +40,7 @@ class SCPI_mannager():
         return value
 
     def set_trigger_level(self, value: int):
-        result = self.ask(f'Set:Threshold:trig_threshold {value}\n')
-        print(result)
+        self.ask(f'Set:Threshold:trig_threshold {value}\n')
 
     def read_trigger_level(self):
         result = self.ask('Read:Threshold:trig_threshold\n')
@@ -50,8 +51,7 @@ class SCPI_mannager():
         return value
     
     def set_trigger_clearance(self, value: int):
-        result = self.ask(f'Set:Timing:trig_clearance {value}\n')
-        print(result)
+        self.ask(f'Set:Timing:trig_clearance {value}\n')
 
     def read_trigger_clearance(self):
         result = self.ask(f'Read:Timing:trig_clearance\n')
@@ -62,8 +62,7 @@ class SCPI_mannager():
         return value
 
     def set_trigger_delay(self, value: int):
-        result = self.ask(f'Set:Timing:pnr_delay {value}\n')
-        print(result)
+        self.ask(f'Set:Timing:pnr_delay {value}\n')
 
     def read_trigger_delay(self):
         result = self.ask(f'Read:Timing:pnr_delay\n')
