@@ -3,7 +3,7 @@ import os
 from PyQt5 import QtWidgets, uic, QtCore
 import pyqtgraph as pg
 import numpy as np
-from ..communication import * 
+from ..communication import SCPI_mannager
 
 
 class graph_view(pg.GraphicsLayoutWidget):
@@ -26,6 +26,7 @@ class Top_window(QtWidgets.QMainWindow):
         self.setFixedSize(self.size())
         self.attach_graph()
         self.toggle_config_input(False)
+        self.scpi_mannager: SCPI_mannager = None
 
         self.pushButton_connect.clicked.connect(self.push_connect)
         self.pushButton_disconnect.clicked.connect(self.push_disconnect)
@@ -53,6 +54,12 @@ class Top_window(QtWidgets.QMainWindow):
         self.spinBox_photon6.valueChanged.connect(self.display_value)
         self.spinBox_photon7.valueChanged.connect(self.display_value)
         self.spinBox_photon8.valueChanged.connect(self.display_value)
+
+        self.pushButton_read.clicked.connect(self.push_read)
+        self.pushButton_write.clicked.connect(self.push_write)
+
+        
+
         
             
 
@@ -112,11 +119,14 @@ class Top_window(QtWidgets.QMainWindow):
         self.pushButton_connect.setEnabled(False)
         self.pushButton_disconnect.setEnabled(True)
         self.toggle_config_input(True)
+        self.scpi_mannager = SCPI_mannager(host=self.lineEdit_ip.text().strip(), port=int(self.lineEdit_port.text()))
+        self.scpi_mannager.idn()
 
     def push_disconnect(self):
         self.pushButton_disconnect.setEnabled(False)
         self.pushButton_connect.setEnabled(True)
         self.toggle_config_input(False)
+        self.scpi_mannager: SCPI_mannager = None
 
     def display_value(self):
         gen_time = lambda x: f'= {8*x} ns'
@@ -134,7 +144,31 @@ class Top_window(QtWidgets.QMainWindow):
         self.label_photon7_display.setText(gen_volt(self.spinBox_photon7.value()))
         self.label_photon8_display.setText(gen_volt(self.spinBox_photon8.value()))
 
+    def push_read(self):
+        self.spinBox_trigger_level.setValue(self.scpi_mannager.read_trigger_level())
+        self.spinBox_trigger_delay.setValue(self.scpi_mannager.read_trigger_delay())
+        self.spinBox_trigger_clearance.setValue(self.scpi_mannager.read_trigger_clearance())
+        self.spinBox_photon1.setValue(self.scpi_mannager.read_photon_threshold(1))
+        self.spinBox_photon2.setValue(self.scpi_mannager.read_photon_threshold(2))
+        self.spinBox_photon3.setValue(self.scpi_mannager.read_photon_threshold(3))
+        self.spinBox_photon4.setValue(self.scpi_mannager.read_photon_threshold(4))
+        self.spinBox_photon5.setValue(self.scpi_mannager.read_photon_threshold(5))
+        self.spinBox_photon6.setValue(self.scpi_mannager.read_photon_threshold(6))
+        self.spinBox_photon7.setValue(self.scpi_mannager.read_photon_threshold(7))
+        self.spinBox_photon8.setValue(self.scpi_mannager.read_photon_threshold(8))
 
+    def push_write(self):
+        self.scpi_mannager.set_trigger_level(self.spinBox_trigger_level.value())
+        self.scpi_mannager.set_trigger_delay(self.spinBox_trigger_delay.value())
+        self.scpi_mannager.set_trigger_clearance(self.spinBox_trigger_clearance.value())
+        self.scpi_mannager.set_photon_threshold(1, self.spinBox_photon1.value())
+        self.scpi_mannager.set_photon_threshold(2, self.spinBox_photon2.value())
+        self.scpi_mannager.set_photon_threshold(3, self.spinBox_photon3.value())
+        self.scpi_mannager.set_photon_threshold(4, self.spinBox_photon4.value())
+        self.scpi_mannager.set_photon_threshold(5, self.spinBox_photon5.value())
+        self.scpi_mannager.set_photon_threshold(6, self.spinBox_photon6.value())
+        self.scpi_mannager.set_photon_threshold(7, self.spinBox_photon7.value())
+        self.scpi_mannager.set_photon_threshold(8, self.spinBox_photon8.value())
 
 
 

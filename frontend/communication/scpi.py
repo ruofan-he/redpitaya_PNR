@@ -67,7 +67,11 @@ class SCPI_mannager():
 
     def read_trigger_delay(self):
         result = self.ask(f'Read:Timing:pnr_delay\n')
-        print(result)
+        try:
+            value = int(result)
+        except:
+            value = 0
+        return value
 
 
 if __name__ == '__main__':
