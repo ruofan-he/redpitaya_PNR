@@ -137,7 +137,7 @@ class SCPIServerPNR(CmdTCPServer):
 
 
         if cmd.startswith('Set:Threshold:'): # Set:Threshold:photon1 10000
-            target = cmd.lstrip('Set:Threshold:')
+            target = cmd[len('Set:Threshold:'):]
             try:
                 success = set_threshold(target)
             except:
@@ -145,7 +145,7 @@ class SCPIServerPNR(CmdTCPServer):
             return 'yes' if success else 'no'
 
         if cmd.startswith('Read:Threshold:'): # Read:Threshold:photon1
-            target = cmd.lstrip('Read:Threshold:')
+            target = cmd[len('Read:Threshold:'):]
             try:
                 result = read_threshold(target)
             except:
@@ -153,7 +153,7 @@ class SCPIServerPNR(CmdTCPServer):
             return '{}'.format(result) if result != None else 'no'
 
         if cmd.startswith('Set:Timing:'): # Set:Timing:trig_clearance 1000
-            target = cmd.lstrip('Set:Timing:')
+            target = cmd[len('Set:Timing:'):]
             try:
                 success = set_timing(target)
             except:
@@ -161,7 +161,7 @@ class SCPIServerPNR(CmdTCPServer):
             return 'yes' if success else 'no'
 
         if cmd.startswith('Read:Timing:'): # Read:Timing:trig_clearance
-            target = cmd.lstrip('Read:Timing:')
+            target = cmd[len('Read:Timing:'):]
             try:
                 result = read_timing(target)
             except:
@@ -172,7 +172,7 @@ class SCPIServerPNR(CmdTCPServer):
             return 'unknown cmd'
 
 def set_threshold(cmd: str):
-    from .monitor import write_value
+    from monitor import write_value
     cmd_s = cmd.split()
     assert len(cmd_s) == 2
     assert cmd_s[0] in address_dict.keys()
@@ -185,7 +185,7 @@ def set_threshold(cmd: str):
     return True
 
 def read_threshold(cmd: str):
-    from .monitor import read_value
+    from monitor import read_value
     cmd_s = cmd.split()
     assert len(cmd_s) == 1
     assert cmd_s[0] in address_dict.keys()
@@ -195,7 +195,7 @@ def read_threshold(cmd: str):
     return value
 
 def set_timing(cmd: str):
-    from .monitor import write_value
+    from monitor import write_value
     cmd_s = cmd.split()
     assert len(cmd_s) == 2
     assert cmd_s[0] in address_dict.keys()
@@ -206,7 +206,7 @@ def set_timing(cmd: str):
     return True
 
 def read_timing(cmd: str):
-    from .monitor import read_value
+    from monitor import read_value
     cmd_s = cmd.split()
     assert len(cmd_s) == 1
     assert cmd_s[0] in address_dict.keys()
