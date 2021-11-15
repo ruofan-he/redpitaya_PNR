@@ -150,7 +150,7 @@ class SCPIServerPNR(CmdTCPServer):
                 result = read_threshold(target)
             except:
                 result = None
-            return f'{result}' if result != None else 'no'
+            return '{}'.format(result) if result != None else 'no'
 
         if cmd.startswith('Set:Timing:'): # Set:Timing:trig_clearance 1000
             target = cmd.lstrip('Set:Timing:')
@@ -166,7 +166,7 @@ class SCPIServerPNR(CmdTCPServer):
                 result = read_timing(target)
             except:
                 result = None
-            return f'{result}' if result != None else 'no'
+            return '{}'.format(result) if result != None else 'no'
 
         else:
             return 'unknown cmd'
