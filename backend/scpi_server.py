@@ -134,6 +134,8 @@ class SCPIServerPNR(CmdTCPServer):
     def process(self, cmd: str):
         if cmd.startswith('*IDN?'):
             return self.name
+
+
         if cmd.startswith('Set:Threshold:'): # Set:Threshold:photon1 10000
             target = cmd.lstrip('Set:Threshold:')
             try:
@@ -141,18 +143,78 @@ class SCPIServerPNR(CmdTCPServer):
             except:
                 success = False
             return 'yes' if success else 'no'
+
+        if cmd.startswith('Read:Threshold:'): # Read:Threshold:photon1
+            target = cmd.lstrip('Read:Threshold:')
+            try:
+                result = read_threshold(target)
+            except:
+                result = None
+            return f'{result}' if result != None else 'no'
+
+        if cmd.startswith('Set:Timing:'): # Set:Timing:trig_clearance 1000
+            target = cmd.lstrip('Set:Timing:')
+            try:
+                success = set_timing(target)
+            except:
+                success = False
+            return 'yes' if success else 'no'
+
+        if cmd.startswith('Read:Timing:'): # Read:Timing:trig_clearance
+            target = cmd.lstrip('Read:Timing:')
+            try:
+                result = read_timing(target)
+            except:
+                result = None
+            return f'{result}' if result != None else 'no'
+
         else:
             return 'unknown cmd'
 
 def set_threshold(cmd: str):
     from .monitor import write_value
-    cmd_s = cmd.split(' ')
+    cmd_s = cmd.split()
     assert len(cmd_s) == 2
     assert cmd_s[0] in address_dict.keys()
     target = cmd_s[0]
     value = int(cmd_s[1]) # -8192 .. 8191
-    
+    assert -(1 << 13) <= value < (1<<13)
+    bit_mask = (1 << 14) - 1
+    signed_14bit_value = ((1<<14) + value) & bit_mask
+    write_value(address_dict[target], signed_14bit_value)
     return True
+
+def read_threshold(cmd: str):
+    from .monitor import read_value
+    cmd_s = cmd.split()
+    assert len(cmd_s) == 1
+    assert cmd_s[0] in address_dict.keys()
+    target = cmd_s[0]
+    value = read_value(address_dict[target])
+    value = value + (((value ^ (1 << 13)) & (1 << 13)) << 1) - (1 << 14)
+    return value
+
+def set_timing(cmd: str):
+    from .monitor import write_value
+    cmd_s = cmd.split()
+    assert len(cmd_s) == 2
+    assert cmd_s[0] in address_dict.keys()
+    target = cmd_s[0]
+    value  = int(cmd_s[1]) # 0 .. 1<<32
+    assert 0 <= value <= (1<<32)
+    write_value(address_dict[target], value)
+    return True
+
+def read_timing(cmd: str):
+    from .monitor import read_value
+    cmd_s = cmd.split()
+    assert len(cmd_s) == 1
+    assert cmd_s[0] in address_dict.keys()
+    target = cmd_s[0]
+    value = read_value(address_dict[target])
+    return value
+
+
     
 
 # ipv4 = os.popen('ip addr show eth0 | grep "\<inet\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
