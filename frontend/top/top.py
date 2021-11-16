@@ -7,12 +7,87 @@ from ..communication import SCPI_mannager
 
 
 class graph_view(pg.GraphicsLayoutWidget):
-    def __init__(self):
+    def __init__(self, top_window):
         super().__init__(show=True)
-        plt1 = self.addPlot()
+        self.top_window : Top_window = top_window # parent
+        self.plt1 = self.addPlot()
         vals = np.random.normal(size=10000)
         y,x = np.histogram(vals, bins=np.linspace(-5, 5, 100))
-        plt1.plot(x, y, stepMode="center", fillLevel=0, fillOutline=True, brush=(0,0,255,150))
+        self.plt1.plot(x, y, stepMode="center", fillLevel=0, fillOutline=True, brush=(0,0,255,150))
+        
+        self.line_photon1 = pg.InfiniteLine(movable=True, angle=90, label='1={value:0.0f}', 
+                       labelOpts={'position':0.1, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
+        self.line_photon2 = pg.InfiniteLine(movable=True, angle=90, label='2={value:0.0f}', 
+                       labelOpts={'position':0.2, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
+        self.line_photon3 = pg.InfiniteLine(movable=True, angle=90, label='3={value:0.0f}', 
+                       labelOpts={'position':0.3, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
+        self.line_photon4 = pg.InfiniteLine(movable=True, angle=90, label='4={value:0.0f}', 
+                       labelOpts={'position':0.4, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
+        self.line_photon5 = pg.InfiniteLine(movable=True, angle=90, label='5={value:0.0f}', 
+                       labelOpts={'position':0.5, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
+        self.line_photon6 = pg.InfiniteLine(movable=True, angle=90, label='6={value:0.0f}', 
+                       labelOpts={'position':0.6, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
+        self.line_photon7 = pg.InfiniteLine(movable=True, angle=90, label='7={value:0.0f}', 
+                       labelOpts={'position':0.7, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
+        self.line_photon8 = pg.InfiniteLine(movable=True, angle=90, label='8={value:0.0f}', 
+                       labelOpts={'position':0.8, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
+
+
+        self.plt1.addItem(self.line_photon1)
+        self.plt1.addItem(self.line_photon2)
+        self.plt1.addItem(self.line_photon3)
+        self.plt1.addItem(self.line_photon4)
+        self.plt1.addItem(self.line_photon5)
+        self.plt1.addItem(self.line_photon6)
+        self.plt1.addItem(self.line_photon7)
+        self.plt1.addItem(self.line_photon8)
+
+
+        def temp_func():
+            self.on_line_dragged()
+            self.top_window.display_value()
+
+        self.line_photon1.sigPositionChangeFinished.connect(temp_func)
+        self.line_photon2.sigPositionChangeFinished.connect(temp_func)
+        self.line_photon3.sigPositionChangeFinished.connect(temp_func)
+        self.line_photon4.sigPositionChangeFinished.connect(temp_func)
+        self.line_photon5.sigPositionChangeFinished.connect(temp_func)
+        self.line_photon6.sigPositionChangeFinished.connect(temp_func)
+        self.line_photon7.sigPositionChangeFinished.connect(temp_func)
+        self.line_photon8.sigPositionChangeFinished.connect(temp_func)
+        
+
+    def photon_threshold_set(self, value_dict: dict):
+        assert len(value_dict) == 8
+        self.line_photon1.setValue(value_dict['photon1'])
+        self.line_photon2.setValue(value_dict['photon2'])
+        self.line_photon3.setValue(value_dict['photon3'])
+        self.line_photon4.setValue(value_dict['photon4'])
+        self.line_photon5.setValue(value_dict['photon5'])
+        self.line_photon6.setValue(value_dict['photon6'])
+        self.line_photon7.setValue(value_dict['photon7'])
+        self.line_photon8.setValue(value_dict['photon8'])
+
+    def on_line_dragged(self):
+        value_dict = {
+            'photon1':round(self.line_photon1.value()),
+            'photon2':round(self.line_photon2.value()),
+            'photon3':round(self.line_photon3.value()),
+            'photon4':round(self.line_photon4.value()),
+            'photon5':round(self.line_photon5.value()),
+            'photon6':round(self.line_photon6.value()),
+            'photon7':round(self.line_photon7.value()),
+            'photon8':round(self.line_photon8.value())
+        }
+        
+        self.top_window.photon_threshold_set(value_dict)
+
+
+    
+
+
+            
+        
         
 
 
@@ -75,7 +150,7 @@ class Top_window(QtWidgets.QMainWindow):
         self.lineEdit_port                      : QtWidgets.QLineEdit   = None
         self.spinBox_trigger_level              : QtWidgets.QSpinBox    = None
         self.spinBox_trigger_delay              : QtWidgets.QSpinBox    = None
-        self.spinBox_trigger_clearance         : QtWidgets.QSpinBox    = None
+        self.spinBox_trigger_clearance          : QtWidgets.QSpinBox    = None
         self.spinBox_photon1                    : QtWidgets.QSpinBox    = None
         self.spinBox_photon2                    : QtWidgets.QSpinBox    = None
         self.spinBox_photon3                    : QtWidgets.QSpinBox    = None
@@ -88,7 +163,7 @@ class Top_window(QtWidgets.QMainWindow):
 
         self.label_trigger_level_display        : QtWidgets.QLabel      = None
         self.label_trigger_delay_display        : QtWidgets.QLabel      = None
-        self.label_trigger_clearance_display   : QtWidgets.QLabel      = None
+        self.label_trigger_clearance_display    : QtWidgets.QLabel      = None
         self.label_photon1_display              : QtWidgets.QLabel      = None
         self.label_photon2_display              : QtWidgets.QLabel      = None
         self.label_photon3_display              : QtWidgets.QLabel      = None
@@ -106,8 +181,8 @@ class Top_window(QtWidgets.QMainWindow):
         self.groupBox_threshold                 : QtWidgets.QGroupBox   = None
 
     def attach_graph(self):
-        win = graph_view() #pg.GraphicsLayoutWidget(show=True)
-        self.graph_container.addWidget(win)
+        self.graph = graph_view(self) #pg.GraphicsLayoutWidget(show=True)
+        self.graph_container.addWidget(self.graph)
 
     def toggle_config_input(self, bool):
         self.groupBox_controll.setEnabled(bool)
@@ -126,6 +201,7 @@ class Top_window(QtWidgets.QMainWindow):
         except Exception as e:
             print(e)
             pass
+        self.toggle_config_input(True)
 
     def push_disconnect(self):
         self.pushButton_disconnect.setEnabled(False)
@@ -149,6 +225,18 @@ class Top_window(QtWidgets.QMainWindow):
         self.label_photon7_display.setText(gen_volt(self.spinBox_photon7.value()))
         self.label_photon8_display.setText(gen_volt(self.spinBox_photon8.value()))
 
+        value_dict = {
+            'photon1':self.spinBox_photon1.value(),
+            'photon2':self.spinBox_photon2.value(),
+            'photon3':self.spinBox_photon3.value(),
+            'photon4':self.spinBox_photon4.value(),
+            'photon5':self.spinBox_photon5.value(),
+            'photon6':self.spinBox_photon6.value(),
+            'photon7':self.spinBox_photon7.value(),
+            'photon8':self.spinBox_photon8.value()
+        }
+        self.graph.photon_threshold_set(value_dict)
+
     def push_read(self):
         self.spinBox_trigger_level.setValue(self.scpi_mannager.read_trigger_level())
         self.spinBox_trigger_delay.setValue(self.scpi_mannager.read_trigger_delay())
@@ -162,6 +250,7 @@ class Top_window(QtWidgets.QMainWindow):
         self.spinBox_photon7.setValue(self.scpi_mannager.read_photon_threshold(7))
         self.spinBox_photon8.setValue(self.scpi_mannager.read_photon_threshold(8))
 
+
     def push_write(self):
         self.scpi_mannager.set_trigger_level(self.spinBox_trigger_level.value())
         self.scpi_mannager.set_trigger_delay(self.spinBox_trigger_delay.value())
@@ -174,6 +263,19 @@ class Top_window(QtWidgets.QMainWindow):
         self.scpi_mannager.set_photon_threshold(6, self.spinBox_photon6.value())
         self.scpi_mannager.set_photon_threshold(7, self.spinBox_photon7.value())
         self.scpi_mannager.set_photon_threshold(8, self.spinBox_photon8.value())
+    
+    def photon_threshold_set(self, value_dict: dict):
+        assert len(value_dict) == 8
+        self.spinBox_photon1.setValue(value_dict['photon1'])
+        self.spinBox_photon2.setValue(value_dict['photon2'])
+        self.spinBox_photon3.setValue(value_dict['photon3'])
+        self.spinBox_photon4.setValue(value_dict['photon4'])
+        self.spinBox_photon5.setValue(value_dict['photon5'])
+        self.spinBox_photon6.setValue(value_dict['photon6'])
+        self.spinBox_photon7.setValue(value_dict['photon7'])
+        self.spinBox_photon8.setValue(value_dict['photon8'])
+
+
 
 
 
