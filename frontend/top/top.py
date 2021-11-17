@@ -11,9 +11,13 @@ class graph_view(pg.GraphicsLayoutWidget):
         super().__init__(show=True)
         self.top_window : Top_window = top_window # parent
         self.plt1 = self.addPlot()
-        vals = np.random.normal(size=10000)
-        y,x = np.histogram(vals, bins=np.linspace(-5, 5, 100))
-        self.plt1.plot(x, y, stepMode="center", fillLevel=0, fillOutline=True, brush=(0,0,255,150))
+
+
+        self.vals = []
+        y,x = np.histogram([])
+        self.hist : pg.PlotDataItem= self.plt1.plot(x, y, stepMode="center", fillLevel=0, fillOutline=True, brush=(0,0,255,150))
+        self.update_hist()
+
         
         self.line_photon1 = pg.InfiniteLine(movable=True, angle=90, label='1:{value:0.0f}', 
                        labelOpts={'position':0.1, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
@@ -55,6 +59,7 @@ class graph_view(pg.GraphicsLayoutWidget):
         self.line_photon6.sigPositionChangeFinished.connect(temp_func)
         self.line_photon7.sigPositionChangeFinished.connect(temp_func)
         self.line_photon8.sigPositionChangeFinished.connect(temp_func)
+
         
 
     def photon_threshold_set(self, value_dict: dict):
@@ -67,6 +72,14 @@ class graph_view(pg.GraphicsLayoutWidget):
         self.line_photon6.setValue(value_dict['photon6'])
         self.line_photon7.setValue(value_dict['photon7'])
         self.line_photon8.setValue(value_dict['photon8'])
+
+    def update_hist(self):
+        y,x = np.histogram(self.vals, bins= 1 + int(np.sqrt(len(self.vals))) )
+        self.hist.setData(x,y)
+
+    def append_data(self, array: list):
+        self.vals = self.vals + array
+        self.update_hist()
 
     def on_line_dragged(self):
         value_dict = {
@@ -81,6 +94,12 @@ class graph_view(pg.GraphicsLayoutWidget):
         }
         
         self.top_window.photon_threshold_set(value_dict)
+
+    def reset_graph(self):
+        self.vals = []
+        self.update_hist()
+
+    
 
 
 
@@ -124,12 +143,13 @@ class Top_window(QtWidgets.QMainWindow):
 
         self.pushButton_read.clicked.connect(self.push_read)
         self.pushButton_write.clicked.connect(self.push_write)
+        self.pushButton_graph_reset.clicked.connect(self.push_graph_reset)
+
+        self.pushButton_graph_load.clicked.connect(self.push_graph_load)
 
 
         
 
-        
-            
 
 
     def ui_components(self):
@@ -139,6 +159,8 @@ class Top_window(QtWidgets.QMainWindow):
         self.pushButton_disconnect              : QtWidgets.QPushButton = None
         self.pushButton_read                    : QtWidgets.QPushButton = None
         self.pushButton_write                   : QtWidgets.QPushButton = None
+        self.pushButton_graph_reset             : QtWidgets.QPushButton = None
+        self.pushButton_graph_load             : QtWidgets.QPushButton = None
         self.lineEdit_ip                        : QtWidgets.QLineEdit   = None
         self.lineEdit_port                      : QtWidgets.QLineEdit   = None
         self.spinBox_trigger_level              : QtWidgets.QSpinBox    = None
@@ -165,6 +187,7 @@ class Top_window(QtWidgets.QMainWindow):
         self.label_photon6_display              : QtWidgets.QLabel      = None
         self.label_photon7_display              : QtWidgets.QLabel      = None
         self.label_photon8_display              : QtWidgets.QLabel      = None
+        self.label_graph_samples                : QtWidgets.QLabel      = None
 
         self.graph_container                    : QtWidgets.QGridLayout = None
 
@@ -173,8 +196,9 @@ class Top_window(QtWidgets.QMainWindow):
         self.groupBox_timing_controll           : QtWidgets.QGroupBox   = None
         self.groupBox_misc_config               : QtWidgets.QGroupBox   = None
         self.groupBox_threshold                 : QtWidgets.QGroupBox   = None
+        self.groupBox_graph_control             : QtWidgets.QGroupBox   = None
 
-        self.checkBox_trig_pos_edge                  : QtWidgets.QCheckBox   = None
+        self.checkBox_trig_pos_edge             : QtWidgets.QCheckBox   = None
         self.checkBox_trig_is_a                 : QtWidgets.QCheckBox   = None
         self.checkBox_pnr_sig_inverse           : QtWidgets.QCheckBox   = None
 
@@ -188,6 +212,7 @@ class Top_window(QtWidgets.QMainWindow):
         self.groupBox_timing_controll.setEnabled(bool)
         self.groupBox_misc_config.setEnabled(bool)
         self.groupBox_threshold.setEnabled(bool)
+        self.groupBox_graph_control.setEnabled(bool)
 
     def push_connect(self):
         try:
@@ -268,6 +293,16 @@ class Top_window(QtWidgets.QMainWindow):
         self.scpi_mannager.set_pnr_sig_inverse(self.checkBox_pnr_sig_inverse.isChecked())
         self.scpi_mannager.set_trig_positive_edge(self.checkBox_trig_pos_edge.isChecked())
         self.scpi_mannager.set_trig_is_a(self.checkBox_trig_is_a.isChecked())
+
+    def push_graph_reset(self):
+        self.graph.reset_graph()
+        self.scpi_mannager.reset_adc_fifo()
+        self.label_graph_samples.setText(f'Samples:{len(self.graph.vals)}')
+
+    def push_graph_load(self):
+        array = self.scpi_mannager.read_pnr_adc_fifo()
+        self.graph.append_data(array)
+        self.label_graph_samples.setText(f'Samples:{len(self.graph.vals)}')
 
     
     def photon_threshold_set(self, value_dict: dict):

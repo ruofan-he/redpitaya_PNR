@@ -745,7 +745,7 @@
       <x>10</x>
       <y>20</y>
       <width>621</width>
-      <height>691</height>
+      <height>621</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="graph_container"/>
@@ -847,6 +847,67 @@
      </property>
      <property name="text">
       <string>disconnect</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_graph_control">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>650</y>
+      <width>621</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Graph control</string>
+    </property>
+    <widget class="QPushButton" name="pushButton_graph_reset">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>reset</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_graph_samples">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>20</y>
+       <width>141</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Sample:0</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_graph_load">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>20</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>load</string>
      </property>
     </widget>
    </widget>

@@ -113,7 +113,8 @@ class SCPI_mannager():
             buff  = io.BytesIO(result)
             array = pickle.load(buff)
             assert type(array) == list
-        except:
+        except Exception as e:
+            print(e)
             array = []
         return array
     
