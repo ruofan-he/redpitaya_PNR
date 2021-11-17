@@ -52,7 +52,12 @@ module PNR_register(
    output reg [ 14-1: 0] adc_photon_threshold_5,
    output reg [ 14-1: 0] adc_photon_threshold_6,
    output reg [ 14-1: 0] adc_photon_threshold_7,
-   output reg [ 14-1: 0] adc_photon_threshold_8
+   output reg [ 14-1: 0] adc_photon_threshold_8,
+   //adc FIFO control
+   input wire [ 14-1: 0] adc_fifo_data,
+   input wire [ 32-1: 0] adc_fifo_counter,
+   output reg            adc_fifo_rst,
+   output wire           adc_fifo_rd_en       // fifo read enable
     );
 
 //---------------------------------------------------------------------------------
@@ -79,6 +84,8 @@ always @(posedge clk_i) begin
       adc_photon_threshold_6  <= 14'b0;
       adc_photon_threshold_7  <= 14'b0;
       adc_photon_threshold_8  <= 14'b0;
+      
+      adc_fifo_rst            <= 1'b0;
 
    end
    else begin
@@ -104,6 +111,11 @@ always @(posedge clk_i) begin
          if (sys_addr[20-1:0]==20'h54)    adc_photon_threshold_6  <= sys_wdata[14-1:0] ;
          if (sys_addr[20-1:0]==20'h58)    adc_photon_threshold_7  <= sys_wdata[14-1:0] ;
          if (sys_addr[20-1:0]==20'h5C)    adc_photon_threshold_8  <= sys_wdata[14-1:0] ;
+         
+         //0x70 is FIFO data read
+         //0x74 is FIFO counter read only
+         if (sys_addr[20-1:0]==20'h78)    adc_fifo_rst    <=  sys_wdata[0] ;
+
       end
    end
 end
@@ -140,9 +152,22 @@ end else begin
       20'h54  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_6}              ; end
       20'h58  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_7}              ; end
       20'h5C  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_8}              ; end
+      
+      20'h70  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_fifo_data         }              ; end
+      20'h74  : begin sys_ack <= sys_en;         sys_rdata <= adc_fifo_counter                                     ; end
+      20'h78  : begin sys_ack <= sys_en;         sys_rdata <= {{32- 1{1'b0}}, adc_fifo_rst          }              ; end
+      
       default : begin sys_ack <= sys_en;         sys_rdata <=  32'h0                                               ; end
    endcase
 end
+
+// adc_fifo_controll
+reg adc_fifo_rd_en_ratch;
+always @(posedge clk_i) begin
+    adc_fifo_rd_en_ratch <= (sys_addr[20-1:0] == 20'h70) && sys_ren;
+end
+assign adc_fifo_rd_en = adc_fifo_rd_en_ratch && !((sys_addr[20-1:0] == 20'h70) && sys_ren); // create 1clk pulse when fifo read operation ends.
+
 
 endmodule
 

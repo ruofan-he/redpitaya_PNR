@@ -38,7 +38,10 @@ module PNR_main(
     input [14-1:0] adc_photon_threshold_8,
     // output
     output [8-1:0] extension_GPIO_p,
-    output [8-1:0] extension_GPIO_n
+    output [8-1:0] extension_GPIO_n,
+    // adc FIFO control
+    output [14-1:0] adc_fifo_data,
+    output          adc_fifo_wr_en
     );
 
 
@@ -72,8 +75,8 @@ end else begin
 end
 
 
-
-
+assign adc_fifo_data  = pnr_source_sig;
+assign adc_fifo_wr_en = delayed_trigger;
 
 assign extension_GPIO_p = segment_photon_num;
 assign extension_GPIO_n = 8'b0;
