@@ -72,6 +72,39 @@ class SCPI_mannager():
             value = 0
         return value
 
+    def set_trig_positive_edge(self, value: bool):
+        self.ask(f'Set:Flag:trig_is_posedge {int(value)}\n')
+    
+    def read_trig_positive_edge(self) -> bool:
+        result = self.ask('Read:Flag:trig_is_posedge\n')
+        try:
+            value = bool(int(result))
+        except:
+            value = False
+        return value
+
+    def set_trig_is_a(self, value: bool):
+        self.ask(f'Set:Flag:trig_is_adc_a {int(value)}\n')
+    
+    def read_trig_is_a(self) -> bool:
+        result = self.ask('Read:Flag:trig_is_adc_a\n')
+        try:
+            value = bool(int(result))
+        except:
+            value = False
+        return value
+    
+    def set_pnr_sig_inverse(self, value: bool):
+        self.ask(f'Set:Flag:pnr_source_is_inverse {int(value)}\n')
+    
+    def read_pnr_sig_inverse(self) -> bool:
+        result = self.ask('Read:Flag:pnr_source_is_inverse\n')
+        try:
+            value = bool(int(result))
+        except:
+            value = False
+        return value
+
 
 if __name__ == '__main__':
     some = SCPI_mannager()

@@ -15,21 +15,21 @@ class graph_view(pg.GraphicsLayoutWidget):
         y,x = np.histogram(vals, bins=np.linspace(-5, 5, 100))
         self.plt1.plot(x, y, stepMode="center", fillLevel=0, fillOutline=True, brush=(0,0,255,150))
         
-        self.line_photon1 = pg.InfiniteLine(movable=True, angle=90, label='1={value:0.0f}', 
+        self.line_photon1 = pg.InfiniteLine(movable=True, angle=90, label='1:{value:0.0f}', 
                        labelOpts={'position':0.1, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
-        self.line_photon2 = pg.InfiniteLine(movable=True, angle=90, label='2={value:0.0f}', 
+        self.line_photon2 = pg.InfiniteLine(movable=True, angle=90, label='2:{value:0.0f}', 
                        labelOpts={'position':0.2, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
-        self.line_photon3 = pg.InfiniteLine(movable=True, angle=90, label='3={value:0.0f}', 
+        self.line_photon3 = pg.InfiniteLine(movable=True, angle=90, label='3:{value:0.0f}', 
                        labelOpts={'position':0.3, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
-        self.line_photon4 = pg.InfiniteLine(movable=True, angle=90, label='4={value:0.0f}', 
+        self.line_photon4 = pg.InfiniteLine(movable=True, angle=90, label='4:{value:0.0f}', 
                        labelOpts={'position':0.4, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
-        self.line_photon5 = pg.InfiniteLine(movable=True, angle=90, label='5={value:0.0f}', 
+        self.line_photon5 = pg.InfiniteLine(movable=True, angle=90, label='5:{value:0.0f}', 
                        labelOpts={'position':0.5, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
-        self.line_photon6 = pg.InfiniteLine(movable=True, angle=90, label='6={value:0.0f}', 
+        self.line_photon6 = pg.InfiniteLine(movable=True, angle=90, label='6:{value:0.0f}', 
                        labelOpts={'position':0.6, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
-        self.line_photon7 = pg.InfiniteLine(movable=True, angle=90, label='7={value:0.0f}', 
+        self.line_photon7 = pg.InfiniteLine(movable=True, angle=90, label='7:{value:0.0f}', 
                        labelOpts={'position':0.7, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
-        self.line_photon8 = pg.InfiniteLine(movable=True, angle=90, label='8={value:0.0f}', 
+        self.line_photon8 = pg.InfiniteLine(movable=True, angle=90, label='8:{value:0.0f}', 
                        labelOpts={'position':0.8, 'color': (200,200,100), 'fill': (200,200,200,50), 'movable': False})
 
 
@@ -133,6 +133,7 @@ class Top_window(QtWidgets.QMainWindow):
         self.pushButton_read.clicked.connect(self.push_read)
         self.pushButton_write.clicked.connect(self.push_write)
 
+
         
 
         
@@ -178,7 +179,12 @@ class Top_window(QtWidgets.QMainWindow):
         self.groupBox_controll                  : QtWidgets.QGroupBox   = None
         self.groupBox_trigger_level             : QtWidgets.QGroupBox   = None
         self.groupBox_timing_controll           : QtWidgets.QGroupBox   = None
+        self.groupBox_misc_config               : QtWidgets.QGroupBox   = None
         self.groupBox_threshold                 : QtWidgets.QGroupBox   = None
+
+        self.checkBox_trig_pos_edge                  : QtWidgets.QCheckBox   = None
+        self.checkBox_trig_is_a                 : QtWidgets.QCheckBox   = None
+        self.checkBox_pnr_sig_inverse           : QtWidgets.QCheckBox   = None
 
     def attach_graph(self):
         self.graph = graph_view(self) #pg.GraphicsLayoutWidget(show=True)
@@ -188,6 +194,7 @@ class Top_window(QtWidgets.QMainWindow):
         self.groupBox_controll.setEnabled(bool)
         self.groupBox_trigger_level.setEnabled(bool)
         self.groupBox_timing_controll.setEnabled(bool)
+        self.groupBox_misc_config.setEnabled(bool)
         self.groupBox_threshold.setEnabled(bool)
 
     def push_connect(self):
@@ -249,6 +256,9 @@ class Top_window(QtWidgets.QMainWindow):
         self.spinBox_photon6.setValue(self.scpi_mannager.read_photon_threshold(6))
         self.spinBox_photon7.setValue(self.scpi_mannager.read_photon_threshold(7))
         self.spinBox_photon8.setValue(self.scpi_mannager.read_photon_threshold(8))
+        self.checkBox_pnr_sig_inverse.setChecked(self.scpi_mannager.read_pnr_sig_inverse())
+        self.checkBox_trig_pos_edge.setChecked(self.scpi_mannager.read_trig_positive_edge())
+        self.checkBox_trig_is_a.setChecked(self.scpi_mannager.read_trig_is_a())
 
 
     def push_write(self):
@@ -263,6 +273,10 @@ class Top_window(QtWidgets.QMainWindow):
         self.scpi_mannager.set_photon_threshold(6, self.spinBox_photon6.value())
         self.scpi_mannager.set_photon_threshold(7, self.spinBox_photon7.value())
         self.scpi_mannager.set_photon_threshold(8, self.spinBox_photon8.value())
+        self.scpi_mannager.set_pnr_sig_inverse(self.checkBox_pnr_sig_inverse.isChecked())
+        self.scpi_mannager.set_trig_positive_edge(self.checkBox_trig_pos_edge.isChecked())
+        self.scpi_mannager.set_trig_is_a(self.checkBox_trig_is_a.isChecked())
+
     
     def photon_threshold_set(self, value_dict: dict):
         assert len(value_dict) == 8
