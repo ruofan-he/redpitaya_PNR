@@ -89,6 +89,8 @@ class CmdTCPServer(socketserver.ThreadingTCPServer):
         raise NotImplemented
 
 
+import pickle
+import io
 
 # for connection test
 class SCPIServerExample(CmdTCPServer):
@@ -103,28 +105,34 @@ class SCPIServerExample(CmdTCPServer):
             return self.name
         if cmd.startswith('READ?'):
             return '{:+.6E}'.format(random.random())
+
         else:
             return 'unknown cmd'
 
 address_dict = {
-    'led_o'          :0x40600000,
-    'trig_is_adc_a'  :0x40600004,
-    'trig_threshold' :0x40600008,
-    'trig_hysteresis':0x4060000C,
+    'led_o'                 :0x40600000,
+    'trig_is_adc_a'         :0x40600004,
+    'trig_threshold'        :0x40600008,
+    'trig_hysteresis'       :0x4060000C,
 
-    'trig_clearance' :0x40600010,
-    'trig_is_posedge':0x40600014,
-    'pnr_delay'      :0x40600018,
+    'trig_clearance'        :0x40600010,
+    'trig_is_posedge'       :0x40600014,
+    'pnr_delay'             :0x40600018,
+    'pnr_source_is_inverse' :0x4060001C,
 
-    'photon1'        :0x40600040,
-    'photon2'        :0x40600044,
-    'photon3'        :0x40600048,
-    'photon4'        :0x4060004C,
- 
-    'photon5'        :0x40600050,
-    'photon6'        :0x40600054,
-    'photon7'        :0x40600058,
-    'photon8'        :0x4060005C
+    'photon1'               :0x40600040,
+    'photon2'               :0x40600044,
+    'photon3'               :0x40600048,
+    'photon4'               :0x4060004C,
+
+    'photon5'               :0x40600050,
+    'photon6'               :0x40600054,
+    'photon7'               :0x40600058,
+    'photon8'               :0x4060005C,
+
+    'adc_fifo_data'         :0x40600070,
+    'adc_fifo_counter'      :0x40600074,
+    'adc_fifo_rst'          :0x40600078
 }
 
 
@@ -152,6 +160,7 @@ class SCPIServerPNR(CmdTCPServer):
                 result = None
             return '{}'.format(result) if result != None else 'no'
 
+
         if cmd.startswith('Set:Timing:'): # Set:Timing:trig_clearance 1000
             target = cmd[len('Set:Timing:'):]
             try:
@@ -167,6 +176,39 @@ class SCPIServerPNR(CmdTCPServer):
             except:
                 result = None
             return '{}'.format(result) if result != None else 'no'
+
+        if cmd.startswith('Set:Flag:'): # Set:Flag:trig_is_posedge 1
+            target = cmd[len('Set:Flag:'):]
+            try:
+                success = set_flag(target)
+            except:
+                success = False
+            return 'yes' if success else 'no'
+
+        if cmd.startswith('Read:Flag:'): # Read:Flag:trig_is_posedge
+            target = cmd[len('Read:Flag:'):]
+            try:
+                result = read_flag(target)
+            except:
+                result = None
+            return '{}'.format(result) if result != None else 'no'
+
+        
+        if cmd.startswith('Read:pnr_adc_fifo'): # Read:pnr_adc_fifo
+            try:
+                result = read_pnr_adc_fifo()
+                buff = io.BytesIO()
+                pickle.dump(result,buff)
+                return buff.getvalue()
+            except:
+                return 'no'
+
+        if cmd.startswith('Reset:adc_fifo'): # Reset:adc_fifo
+            try:
+                success = reset_adc_fifo()
+            except:
+                success = False
+            return 'yes' if success else 'no'
 
         else:
             return 'unknown cmd'
@@ -214,8 +256,41 @@ def read_timing(cmd: str):
     value = read_value(address_dict[target])
     return value
 
+def set_flag(cmd: str):
+    from monitor import write_value
+    cmd_s = cmd.split()
+    assert len(cmd_s) == 2
+    assert cmd_s[0] in address_dict.keys()
+    target = cmd_s[0]
+    value  = 1 if int(cmd_s[1]) else 0 # 0 or 1
+    assert value in [0,1]
+    write_value(address_dict[target], value)
+    return True
 
+def read_flag(cmd: str):
+    from monitor import read_value
+    cmd_s = cmd.split()
+    assert len(cmd_s) == 1
+    assert cmd_s[0] in address_dict.keys()
+    target = cmd_s[0]
+    value = read_value(address_dict[target])
+    return value
+
+def read_pnr_adc_fifo():
+    from monitor import read_value
+    data_count = read_value(address_dict['adc_fifo_counter'])
+    array = []
+    for i in range(data_count):
+        value = read_value(address_dict['adc_fifo_data'])
+        array.append()
+    return array
     
+def reset_adc_fifo():
+    from monitor import write_value
+    write_value(address_dict['adc_fifo_rst'], 1)
+    write_value(address_dict['adc_fifo_rst'], 0)
+    return True
+
 
 # ipv4 = os.popen('ip addr show eth0 | grep "\<inet\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
 

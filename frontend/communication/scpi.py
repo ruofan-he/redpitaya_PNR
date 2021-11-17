@@ -1,4 +1,6 @@
 import socket
+import pickle
+import io
 
 
 class SCPI_mannager():
@@ -6,7 +8,7 @@ class SCPI_mannager():
         self.host = host
         self.port = port
     
-    def ask(self, command):
+    def ask(self, command, silent = False):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             try:
                 s.settimeout(2)
@@ -15,8 +17,8 @@ class SCPI_mannager():
                     command = command.encode()
                 print(command)
                 s.send(command)
-                result = s.recv(1024)
-                print(result)
+                result = s.recv(8192)
+                if not silent: print(result)
                 return result
             except socket.timeout:
                 print('timeout')
@@ -71,6 +73,53 @@ class SCPI_mannager():
         except:
             value = 0
         return value
+
+    def set_trig_positive_edge(self, value: bool):
+        self.ask(f'Set:Flag:trig_is_posedge {int(value)}\n')
+    
+    def read_trig_positive_edge(self) -> bool:
+        result = self.ask('Read:Flag:trig_is_posedge\n')
+        try:
+            value = bool(int(result))
+        except:
+            value = False
+        return value
+
+    def set_trig_is_a(self, value: bool):
+        self.ask(f'Set:Flag:trig_is_adc_a {int(value)}\n')
+    
+    def read_trig_is_a(self) -> bool:
+        result = self.ask('Read:Flag:trig_is_adc_a\n')
+        try:
+            value = bool(int(result))
+        except:
+            value = False
+        return value
+    
+    def set_pnr_sig_inverse(self, value: bool):
+        self.ask(f'Set:Flag:pnr_source_is_inverse {int(value)}\n')
+    
+    def read_pnr_sig_inverse(self) -> bool:
+        result = self.ask('Read:Flag:pnr_source_is_inverse\n')
+        try:
+            value = bool(int(result))
+        except:
+            value = False
+        return value
+
+    def read_pnr_adc_fifo(self) -> list:
+        result = self.ask('Read:pnr_adc_fifo\n', silent=True)
+        try:
+            buff  = io.BytesIO(result)
+            array = pickle.load(buff)
+            assert type(array) == list
+        except Exception as e:
+            print(e)
+            array = []
+        return array
+    
+    def reset_adc_fifo(self):
+        self.ask('Reset:adc_fifo\n')
 
 
 if __name__ == '__main__':

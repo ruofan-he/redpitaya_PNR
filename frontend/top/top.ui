@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1010</width>
-    <height>663</height>
+    <width>1013</width>
+    <height>741</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,10 +32,386 @@
       <x>640</x>
       <y>120</y>
       <width>361</width>
-      <height>511</height>
+      <height>591</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="config_container">
+     <item row="4" column="0">
+      <widget class="QGroupBox" name="groupBox_threshold">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>2</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="title">
+        <string>Threshold</string>
+       </property>
+       <widget class="QLabel" name="label_photon1">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>111</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Photon1</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon2">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>60</y>
+          <width>111</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Photon2</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon3">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>111</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Photon3</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="spinBox_photon1">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>30</y>
+          <width>101</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>-8192</number>
+        </property>
+        <property name="maximum">
+         <number>8191</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon1_display">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>30</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>= X V</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="spinBox_photon2">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>60</y>
+          <width>101</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>-8192</number>
+        </property>
+        <property name="maximum">
+         <number>8191</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="spinBox_photon3">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>90</y>
+          <width>101</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>-8192</number>
+        </property>
+        <property name="maximum">
+         <number>8191</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon4">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>120</y>
+          <width>111</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Photon4</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon5">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>150</y>
+          <width>111</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Photon5</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon6">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>180</y>
+          <width>111</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Photon6</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon7">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>210</y>
+          <width>111</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Photon7</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="spinBox_photon4">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>120</y>
+          <width>101</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>-8192</number>
+        </property>
+        <property name="maximum">
+         <number>8191</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="spinBox_photon5">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>150</y>
+          <width>101</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>-8192</number>
+        </property>
+        <property name="maximum">
+         <number>8191</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="spinBox_photon6">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>180</y>
+          <width>101</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>-8192</number>
+        </property>
+        <property name="maximum">
+         <number>8191</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="spinBox_photon7">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>210</y>
+          <width>101</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>-8192</number>
+        </property>
+        <property name="maximum">
+         <number>8191</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon2_display">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>60</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>= X V</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon3_display">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>90</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>= X V</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon4_display">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>120</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>= X V</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon5_display">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>150</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>= X V</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon6_display">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>180</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>= X V</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon7_display">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>210</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>= X V</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon8">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>240</y>
+          <width>111</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Photon8</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="spinBox_photon8">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>240</y>
+          <width>101</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>-8192</number>
+        </property>
+        <property name="maximum">
+         <number>8191</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_photon8_display">
+        <property name="geometry">
+         <rect>
+          <x>230</x>
+          <y>240</y>
+          <width>121</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>= X V</string>
+        </property>
+       </widget>
+      </widget>
+     </item>
      <item row="2" column="0">
       <widget class="QGroupBox" name="groupBox_timing_controll">
        <property name="sizePolicy">
@@ -229,6 +605,25 @@
          <string>= X V</string>
         </property>
        </widget>
+       <widget class="QCheckBox" name="checkBox_trig_pos_edge">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>101</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="text">
+         <string>Positive edge</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
       </widget>
      </item>
      <item row="0" column="0">
@@ -286,377 +681,58 @@
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QGroupBox" name="groupBox_threshold">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      <widget class="QGroupBox" name="groupBox_misc_config">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
-         <verstretch>2</verstretch>
+         <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="title">
-        <string>Threshold</string>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>60</height>
+        </size>
        </property>
-       <widget class="QLabel" name="label_photon1">
+       <property name="title">
+        <string>Misc. config</string>
+       </property>
+       <widget class="QCheckBox" name="checkBox_trig_is_a">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>20</y>
-          <width>111</width>
-          <height>20</height>
+          <y>30</y>
+          <width>171</width>
+          <height>16</height>
          </rect>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
         </property>
         <property name="text">
-         <string>Photon1</string>
+         <string>Trigger source is DAC A</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
-       <widget class="QLabel" name="label_photon2">
+       <widget class="QCheckBox" name="checkBox_pnr_sig_inverse">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>50</y>
-          <width>111</width>
-          <height>20</height>
+          <x>200</x>
+          <y>30</y>
+          <width>131</width>
+          <height>16</height>
          </rect>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
         </property>
         <property name="text">
-         <string>Photon2</string>
+         <string>PNR sig inverse</string>
         </property>
-       </widget>
-       <widget class="QLabel" name="label_photon3">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>80</y>
-          <width>111</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Photon3</string>
-        </property>
-       </widget>
-       <widget class="QSpinBox" name="spinBox_photon1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>120</x>
-          <y>20</y>
-          <width>101</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="minimum">
-         <number>-8192</number>
-        </property>
-        <property name="maximum">
-         <number>8191</number>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_photon1_display">
-        <property name="geometry">
-         <rect>
-          <x>230</x>
-          <y>20</y>
-          <width>121</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>= X V</string>
-        </property>
-       </widget>
-       <widget class="QSpinBox" name="spinBox_photon2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>120</x>
-          <y>50</y>
-          <width>101</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="minimum">
-         <number>-8192</number>
-        </property>
-        <property name="maximum">
-         <number>8191</number>
-        </property>
-       </widget>
-       <widget class="QSpinBox" name="spinBox_photon3">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>120</x>
-          <y>80</y>
-          <width>101</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="minimum">
-         <number>-8192</number>
-        </property>
-        <property name="maximum">
-         <number>8191</number>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_photon4">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>110</y>
-          <width>111</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Photon4</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_photon5">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>140</y>
-          <width>111</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Photon5</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_photon6">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>170</y>
-          <width>111</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Photon6</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_photon7">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>200</y>
-          <width>111</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Photon7</string>
-        </property>
-       </widget>
-       <widget class="QSpinBox" name="spinBox_photon4">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>120</x>
-          <y>110</y>
-          <width>101</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="minimum">
-         <number>-8192</number>
-        </property>
-        <property name="maximum">
-         <number>8191</number>
-        </property>
-       </widget>
-       <widget class="QSpinBox" name="spinBox_photon5">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>120</x>
-          <y>140</y>
-          <width>101</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="minimum">
-         <number>-8192</number>
-        </property>
-        <property name="maximum">
-         <number>8191</number>
-        </property>
-       </widget>
-       <widget class="QSpinBox" name="spinBox_photon6">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>120</x>
-          <y>170</y>
-          <width>101</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="minimum">
-         <number>-8192</number>
-        </property>
-        <property name="maximum">
-         <number>8191</number>
-        </property>
-       </widget>
-       <widget class="QSpinBox" name="spinBox_photon7">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>120</x>
-          <y>200</y>
-          <width>101</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="minimum">
-         <number>-8192</number>
-        </property>
-        <property name="maximum">
-         <number>8191</number>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_photon2_display">
-        <property name="geometry">
-         <rect>
-          <x>230</x>
-          <y>50</y>
-          <width>121</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>= X V</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_photon3_display">
-        <property name="geometry">
-         <rect>
-          <x>230</x>
-          <y>80</y>
-          <width>121</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>= X V</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_photon4_display">
-        <property name="geometry">
-         <rect>
-          <x>230</x>
-          <y>110</y>
-          <width>121</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>= X V</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_photon5_display">
-        <property name="geometry">
-         <rect>
-          <x>230</x>
-          <y>140</y>
-          <width>121</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>= X V</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_photon6_display">
-        <property name="geometry">
-         <rect>
-          <x>230</x>
-          <y>170</y>
-          <width>121</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>= X V</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_photon7_display">
-        <property name="geometry">
-         <rect>
-          <x>230</x>
-          <y>200</y>
-          <width>121</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>= X V</string>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_photon8">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>230</y>
-          <width>111</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Photon8</string>
-        </property>
-       </widget>
-       <widget class="QSpinBox" name="spinBox_photon8">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>120</x>
-          <y>230</y>
-          <width>101</width>
-          <height>21</height>
-         </rect>
-        </property>
-        <property name="minimum">
-         <number>-8192</number>
-        </property>
-        <property name="maximum">
-         <number>8191</number>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_photon8_display">
-        <property name="geometry">
-         <rect>
-          <x>230</x>
-          <y>230</y>
-          <width>121</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>= X V</string>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </widget>
@@ -669,7 +745,7 @@
       <x>10</x>
       <y>20</y>
       <width>621</width>
-      <height>611</height>
+      <height>621</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="graph_container"/>
@@ -771,6 +847,67 @@
      </property>
      <property name="text">
       <string>disconnect</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_graph_control">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>650</y>
+      <width>621</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Graph control</string>
+    </property>
+    <widget class="QPushButton" name="pushButton_graph_reset">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>reset</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_graph_samples">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>20</y>
+       <width>141</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Sample:0</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_graph_load">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>20</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>load</string>
      </property>
     </widget>
    </widget>

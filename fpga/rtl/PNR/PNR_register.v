@@ -44,6 +44,7 @@ module PNR_register(
    output reg [ 32-1: 0] trig_clearance   , // clearance to next trigger(unit is a clock duration)
    output reg            trig_is_posedge  , // trigger with positive edge
    output reg [ 32-1: 0] pnr_delay        , // trigger pnr delay(unit is a clock duration)
+   output reg            pnr_source_is_inverse, // inverse pnr source or not
    //ADC_threshold for photon number resolving
    output reg [ 14-1: 0] adc_photon_threshold_1,
    output reg [ 14-1: 0] adc_photon_threshold_2,
@@ -52,7 +53,12 @@ module PNR_register(
    output reg [ 14-1: 0] adc_photon_threshold_5,
    output reg [ 14-1: 0] adc_photon_threshold_6,
    output reg [ 14-1: 0] adc_photon_threshold_7,
-   output reg [ 14-1: 0] adc_photon_threshold_8
+   output reg [ 14-1: 0] adc_photon_threshold_8,
+   //adc FIFO control
+   input wire [ 14-1: 0] adc_fifo_data,
+   input wire [ 32-1: 0] adc_fifo_counter,
+   output reg            adc_fifo_rst,
+   output wire           adc_fifo_rd_en       // fifo read enable
     );
 
 //---------------------------------------------------------------------------------
@@ -68,8 +74,10 @@ always @(posedge clk_i) begin
       trig_clearance <= 32'd200; // default clearance to next trigger is 1600ns
       trig_is_posedge<= 1'b1; // default trig with positive edge
       pnr_delay      <= 32'd100; // default delay is 800ns
+      pnr_source_is_inverse <= 1'b0; // default : signal is not inversed
       //aux_i is read only
       aux_o          <= 32'd0;
+
       
       adc_photon_threshold_1  <= 14'b0;
       adc_photon_threshold_2  <= 14'b0;
@@ -79,6 +87,8 @@ always @(posedge clk_i) begin
       adc_photon_threshold_6  <= 14'b0;
       adc_photon_threshold_7  <= 14'b0;
       adc_photon_threshold_8  <= 14'b0;
+      
+      adc_fifo_rst            <= 1'b0;
 
    end
    else begin
@@ -91,6 +101,7 @@ always @(posedge clk_i) begin
          if (sys_addr[20-1:0]==20'h10)    trig_clearance     <= sys_wdata[32-1:0] ;
          if (sys_addr[20-1:0]==20'h14)    trig_is_posedge    <= sys_wdata[     0] ;
          if (sys_addr[20-1:0]==20'h18)    pnr_delay          <= sys_wdata[32-1:0] ;
+         if (sys_addr[20-1:0]==20'h1C)    pnr_source_is_inverse   <= sys_wdata[     0];
          
          //0x20 is aux_i, read only
          if (sys_addr[20-1:0]==20'h24)    aux_o              <= sys_wdata[32-1:0] ;
@@ -104,6 +115,11 @@ always @(posedge clk_i) begin
          if (sys_addr[20-1:0]==20'h54)    adc_photon_threshold_6  <= sys_wdata[14-1:0] ;
          if (sys_addr[20-1:0]==20'h58)    adc_photon_threshold_7  <= sys_wdata[14-1:0] ;
          if (sys_addr[20-1:0]==20'h5C)    adc_photon_threshold_8  <= sys_wdata[14-1:0] ;
+         
+         //0x70 is FIFO data read
+         //0x74 is FIFO counter read only
+         if (sys_addr[20-1:0]==20'h78)    adc_fifo_rst    <=  sys_wdata[0] ;
+
       end
    end
 end
@@ -127,6 +143,7 @@ end else begin
       20'h10  : begin sys_ack <= sys_en;         sys_rdata <=  trig_clearance                                      ; end
       20'h14  : begin sys_ack <= sys_en;         sys_rdata <= {{32- 1{1'b0}}, trig_is_posedge       }              ; end
       20'h18  : begin sys_ack <= sys_en;         sys_rdata <=  pnr_delay                                           ; end
+      20'h1C  : begin sys_ack <= sys_en;         sys_rdata <= {{32- 1{1'b0}}, pnr_source_is_inverse }              ; end
       
       20'h20  : begin sys_ack <= sys_en;         sys_rdata <=  aux_i                                               ; end
       20'h24  : begin sys_ack <= sys_en;         sys_rdata <=  aux_o                                               ; end
@@ -140,9 +157,22 @@ end else begin
       20'h54  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_6}              ; end
       20'h58  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_7}              ; end
       20'h5C  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_8}              ; end
+      
+      20'h70  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_fifo_data         }              ; end
+      20'h74  : begin sys_ack <= sys_en;         sys_rdata <= adc_fifo_counter                                     ; end
+      20'h78  : begin sys_ack <= sys_en;         sys_rdata <= {{32- 1{1'b0}}, adc_fifo_rst          }              ; end
+      
       default : begin sys_ack <= sys_en;         sys_rdata <=  32'h0                                               ; end
    endcase
 end
+
+// adc_fifo_controll
+reg adc_fifo_rd_en_ratch;
+always @(posedge clk_i) begin
+    adc_fifo_rd_en_ratch <= (sys_addr[20-1:0] == 20'h70) && sys_ren;
+end
+assign adc_fifo_rd_en = adc_fifo_rd_en_ratch && !((sys_addr[20-1:0] == 20'h70) && sys_ren); // create 1clk pulse when fifo read operation ends.
+
 
 endmodule
 
