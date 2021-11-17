@@ -83,14 +83,6 @@ class graph_view(pg.GraphicsLayoutWidget):
         self.top_window.photon_threshold_set(value_dict)
 
 
-    
-
-
-            
-        
-        
-
-
 
 class Top_window(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -208,7 +200,7 @@ class Top_window(QtWidgets.QMainWindow):
         except Exception as e:
             print(e)
             pass
-        self.toggle_config_input(True)
+
 
     def push_disconnect(self):
         self.pushButton_disconnect.setEnabled(False)

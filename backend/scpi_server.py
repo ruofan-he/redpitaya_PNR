@@ -89,6 +89,8 @@ class CmdTCPServer(socketserver.ThreadingTCPServer):
         raise NotImplemented
 
 
+import pickle
+import io
 
 # for connection test
 class SCPIServerExample(CmdTCPServer):
@@ -103,6 +105,7 @@ class SCPIServerExample(CmdTCPServer):
             return self.name
         if cmd.startswith('READ?'):
             return '{:+.6E}'.format(random.random())
+
         else:
             return 'unknown cmd'
 
@@ -125,7 +128,11 @@ address_dict = {
     'photon5'               :0x40600050,
     'photon6'               :0x40600054,
     'photon7'               :0x40600058,
-    'photon8'               :0x4060005C
+    'photon8'               :0x4060005C,
+
+    'adc_fifo_data'         :0x40600070,
+    'adc_fifo_counter'      :0x40600074,
+    'adc_fifo_rst'          :0x40600078
 }
 
 
@@ -185,6 +192,23 @@ class SCPIServerPNR(CmdTCPServer):
             except:
                 result = None
             return '{}'.format(result) if result != None else 'no'
+
+        
+        if cmd.startswith('Read:pnr_adc_fifo'): # Read:pnr_adc_fifo
+            try:
+                result = read_pnr_adc_fifo()
+                buff = io.BytesIO()
+                pickle.dump(result,buff)
+                return buff.getvalue()
+            except:
+                return 'no'
+
+        if cmd.startswith('Reset:adc_fifo'): # Reset:adc_fifo
+            try:
+                success = reset_adc_fifo()
+            except:
+                success = False
+            return 'yes' if success else 'no'
 
         else:
             return 'unknown cmd'
@@ -251,7 +275,22 @@ def read_flag(cmd: str):
     target = cmd_s[0]
     value = read_value(address_dict[target])
     return value
+
+def read_pnr_adc_fifo():
+    from monitor import read_value
+    data_count = read_value(address_dict['adc_fifo_counter'])
+    array = []
+    for i in range(data_count):
+        value = read_value(address_dict['adc_fifo_data'])
+        array.append()
+    return array
     
+def reset_adc_fifo():
+    from monitor import write_value
+    write_value(address_dict['adc_fifo_rst'], 1)
+    write_value(address_dict['adc_fifo_rst'], 0)
+    return True
+
 
 # ipv4 = os.popen('ip addr show eth0 | grep "\<inet\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()
 
