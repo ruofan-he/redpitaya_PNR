@@ -282,7 +282,7 @@ def read_pnr_adc_fifo():
     array = []
     for i in range(data_count):
         value = read_value(address_dict['adc_fifo_data'])
-        array.append()
+        array.append(value)
     return array
     
 def reset_adc_fifo():
