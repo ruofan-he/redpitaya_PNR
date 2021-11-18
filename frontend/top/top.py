@@ -74,7 +74,8 @@ class graph_view(pg.GraphicsLayoutWidget):
         self.line_photon8.setValue(value_dict['photon8'])
 
     def update_hist(self):
-        y,x = np.histogram(self.vals, bins= 1 + int(np.sqrt(len(self.vals))) )
+        bins = 1 if len(self.vals) == 0 else np.linspace(min(self.vals) - 0.5, max(self.vals) + 0.5 , max(self.vals) - min(self.vals) + 2)
+        y,x = np.histogram(self.vals, bins= bins )
         self.hist.setData(x,y)
 
     def append_data(self, array: list):
