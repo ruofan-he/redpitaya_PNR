@@ -282,6 +282,7 @@ def read_pnr_adc_fifo():
     array = []
     for i in range(data_count):
         value = read_value(address_dict['adc_fifo_data'])
+        value = value + (((value ^ (1 << 13)) & (1 << 13)) << 1) - (1 << 14)
         array.append(value)
     return array
     
