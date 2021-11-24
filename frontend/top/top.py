@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets, uic, QtCore
 import pyqtgraph as pg
 import numpy as np
 from ..communication import SCPI_mannager
+import pickle
 
 
 class graph_view(pg.GraphicsLayoutWidget):
@@ -95,6 +96,12 @@ class graph_view(pg.GraphicsLayoutWidget):
         }
         
         self.top_window.photon_threshold_set(value_dict)
+
+
+    def save_vals(self):
+        with open('vals.pickle', 'wb') as f:
+            pickle.dump(self.vals, f)
+
 
     def reset_graph(self):
         self.vals = []
@@ -304,6 +311,7 @@ class Top_window(QtWidgets.QMainWindow):
         array = self.scpi_mannager.read_pnr_adc_fifo()
         self.graph.append_data(array)
         self.label_graph_samples.setText(f'Samples:{len(self.graph.vals)}')
+        self.graph.save_vals()
 
     
     def photon_threshold_set(self, value_dict: dict):
