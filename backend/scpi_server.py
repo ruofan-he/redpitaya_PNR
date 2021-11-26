@@ -278,7 +278,7 @@ def read_flag(cmd: str):
 
 def read_pnr_adc_fifo():
     from monitor import read_value
-    data_count = read_value(address_dict['adc_fifo_counter'])
+    data_count = min(read_value(address_dict['adc_fifo_counter']), 200)
     array = []
     for i in range(data_count):
         value = read_value(address_dict['adc_fifo_data'])

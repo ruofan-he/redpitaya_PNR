@@ -309,8 +309,9 @@ class Top_window(QtWidgets.QMainWindow):
 
     def push_graph_load(self):
         array = self.scpi_mannager.read_pnr_adc_fifo()
-        self.graph.append_data(array)
-        self.label_graph_samples.setText(f'Samples:{len(self.graph.vals)}')
+        for i in range(100):
+            self.graph.append_data(array)
+            self.label_graph_samples.setText(f'Samples:{len(self.graph.vals)}')
         self.graph.save_vals()
 
     
