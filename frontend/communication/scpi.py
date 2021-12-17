@@ -9,6 +9,11 @@ class SCPI_mannager():
         self.port = port
     
     def ask(self, command, silent = False):
+        # recv is blocking until any data added to socket buffer.
+        # sometime, such as using real network instrument, overhead time allow to go over blocking before all data arrive.
+        # While depending network instrument, <1kB data would arrive at once because not to divided into multiple packet.
+        # Bigger data or some trouble time, please swich this ask func to ask_bigdata.
+        # ask_bigdata will be almighty. But some overhead waiting time within.
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             try:
                 s.settimeout(2)
@@ -20,6 +25,33 @@ class SCPI_mannager():
                 result = s.recv(8192)
                 if not silent: print(result)
                 return result
+            except socket.timeout:
+                print('timeout')
+            except ConnectionError:
+                print('connectionError')
+
+    def ask_bigdata(self, command, silent = False):
+        # ask_bigdata will repeat recv until timeout, meaning there is no data.
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.settimeout(2)
+                s.connect((self.host, self.port))
+                if type(command) == str:
+                    command = command.encode()
+                print(command)
+                s.send(command)
+
+                s.settimeout(0.1)
+
+                try:
+                    result = b''
+                    while True:
+                        buff = s.recv(8192)
+                        result += buff
+                except socket.timeout:
+                    if not silent: print(result)
+                    return result if result else None
+                
             except socket.timeout:
                 print('timeout')
             except ConnectionError:
@@ -108,7 +140,7 @@ class SCPI_mannager():
         return value
 
     def read_pnr_adc_fifo(self) -> list:
-        result = self.ask('Read:pnr_adc_fifo\n', silent=True)
+        result = self.ask_bigdata('Read:pnr_adc_fifo\n', silent=True)
         try:
             buff  = io.BytesIO(result)
             array = pickle.load(buff)
@@ -125,4 +157,3 @@ class SCPI_mannager():
 if __name__ == '__main__':
     some = SCPI_mannager()
     some.idn()
-
