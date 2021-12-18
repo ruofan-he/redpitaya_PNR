@@ -3,7 +3,8 @@ import os
 from PyQt5 import QtWidgets, uic, QtCore
 import pyqtgraph as pg
 import numpy as np
-from ..communication import SCPI_mannager
+from ..communication import SCPI_mannager, upload
+import json
 
 
 class graph_view(pg.GraphicsLayoutWidget):
@@ -115,6 +116,7 @@ class Top_window(QtWidgets.QMainWindow):
         self.toggle_config_input(False)
         self.scpi_mannager: SCPI_mannager = None
 
+        self.pushButton_upload.clicked.connect(self.push_upload)
         self.pushButton_connect.clicked.connect(self.push_connect)
         self.pushButton_disconnect.clicked.connect(self.push_disconnect)
 
@@ -156,12 +158,13 @@ class Top_window(QtWidgets.QMainWindow):
     def ui_components(self):
         # just type hint
         self.graph_container                    : QtWidgets.QGridLayout = None
+        self.pushButton_upload                  : QtWidgets.QGridLayout = None
         self.pushButton_connect                 : QtWidgets.QPushButton = None
         self.pushButton_disconnect              : QtWidgets.QPushButton = None
         self.pushButton_read                    : QtWidgets.QPushButton = None
         self.pushButton_write                   : QtWidgets.QPushButton = None
         self.pushButton_graph_reset             : QtWidgets.QPushButton = None
-        self.pushButton_graph_load             : QtWidgets.QPushButton = None
+        self.pushButton_graph_load              : QtWidgets.QPushButton = None
         self.lineEdit_ip                        : QtWidgets.QLineEdit   = None
         self.lineEdit_port                      : QtWidgets.QLineEdit   = None
         self.spinBox_trigger_level              : QtWidgets.QSpinBox    = None
@@ -214,6 +217,17 @@ class Top_window(QtWidgets.QMainWindow):
         self.groupBox_misc_config.setEnabled(bool)
         self.groupBox_threshold.setEnabled(bool)
         self.groupBox_graph_control.setEnabled(bool)
+
+    def push_upload(self):
+        host         = self.lineEdit_ip.text().strip()
+        ssh_port     = 22
+        user         = 'root'
+        passwd       = 'root'
+        upload_cfg   = json.load(open("upload_cfg.json"))
+        assets       = upload_cfg["assets"]
+        exec_command = upload_cfg["exec_command"]
+
+        upload(host, ssh_port, user, passwd, assets, exec_command)
 
     def push_connect(self):
         try:

@@ -1,0 +1,27 @@
+{
+    "exec_command": "sh start_scpi.sh",
+    "assets": [
+        [
+            "./backend/",
+            "/root/",
+            [
+                "Makefile",
+                "red_pitaya_top.bit",
+                "scpi_server.py",
+                "start_scpi.sh"
+            ]
+        ],
+        [
+            "./backend/monitor/",
+            "/root/monitor/",
+            [
+                "__init__.py",
+                "Makefile",
+                "manager.py",
+                "monitor.c",
+                "version.h",
+                "wrapper.c"
+            ]
+        ]
+    ]
+}

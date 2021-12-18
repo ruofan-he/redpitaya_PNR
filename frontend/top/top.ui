@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1013</width>
-    <height>741</height>
+    <height>762</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -30,7 +30,7 @@
     <property name="geometry">
      <rect>
       <x>640</x>
-      <y>120</y>
+      <y>140</y>
       <width>361</width>
       <height>591</height>
      </rect>
@@ -743,9 +743,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
+      <y>10</y>
       <width>621</width>
-      <height>621</height>
+      <height>651</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="graph_container"/>
@@ -754,9 +754,9 @@
     <property name="geometry">
      <rect>
       <x>640</x>
-      <y>20</y>
+      <y>10</y>
       <width>359</width>
-      <height>90</height>
+      <height>131</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -790,7 +790,7 @@
     <widget class="QLineEdit" name="lineEdit_ip">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>110</x>
        <y>30</y>
        <width>131</width>
        <height>21</height>
@@ -813,7 +813,7 @@
     <widget class="QLineEdit" name="lineEdit_port">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>110</x>
        <y>60</y>
        <width>131</width>
        <height>21</height>
@@ -823,10 +823,10 @@
     <widget class="QPushButton" name="pushButton_connect">
      <property name="geometry">
       <rect>
-       <x>270</x>
-       <y>30</y>
-       <width>81</width>
-       <height>21</height>
+       <x>20</x>
+       <y>90</y>
+       <width>161</width>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
@@ -839,14 +839,27 @@
      </property>
      <property name="geometry">
       <rect>
-       <x>270</x>
-       <y>60</y>
-       <width>81</width>
-       <height>21</height>
+       <x>190</x>
+       <y>90</y>
+       <width>161</width>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
       <string>disconnect</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_upload">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>30</y>
+       <width>91</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>upload</string>
      </property>
     </widget>
    </widget>
@@ -857,7 +870,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>650</y>
+      <y>670</y>
       <width>621</width>
       <height>61</height>
      </rect>
