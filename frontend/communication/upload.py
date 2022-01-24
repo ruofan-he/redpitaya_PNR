@@ -9,6 +9,7 @@ def upload(host, port, user, passwd, assets, exec_command):
     sftp = ssh.open_sftp()
     print("transferring to " + host + " ...", end='')
     for src, dst, filelist in assets:
+        ssh.exec_command(f"mkdir -p {dst}")
         for filename in filelist:
             sftp.put(src + filename, dst + filename)
     sftp.close()
