@@ -1,5 +1,5 @@
 {
-    "exec_command": "sh start_scpi.sh",
+    "exec_command": "sh start_scpi.sh >& build.log",
     "assets": [
         [
             "./backend/",
