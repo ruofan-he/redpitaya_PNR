@@ -360,8 +360,11 @@ assign adc_dat[1] = digital_loop ? dac_b : {adc_dat_raw[1][14-1], ~adc_dat_raw[1
 // DAC IO
 ////////////////////////////////////////////////////////////////////////////////
 
+logic [ 14-1:0] dac_masked_GPIO; // from PNR_block, masked GPIO is outputed as DAC-data-wise 
+
 // Sumation of ASG and PID signal perform saturation before sending to DAC 
-assign dac_a_sum = asg_dat[0] + pid_dat[0];
+//assign dac_a_sum = asg_dat[0] + pid_dat[0];
+assign dac_a_sum = dac_masked_GPIO; // dac_a is assigned for masked GPIO
 assign dac_b_sum = asg_dat[1] + pid_dat[1];
 
 // saturation
@@ -456,6 +459,7 @@ PNR_block i_pnr_block (
   .led_o           (led_o),
   .extension_GPIO_n(extension_n_i),
   .extension_GPIO_p(extension_p_i),
+  .dac_masked_GPIO (dac_masked_GPIO),
   // System bus
   .sys_addr        (sys[6].addr ),
   .sys_wdata       (sys[6].wdata),

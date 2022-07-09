@@ -120,6 +120,8 @@ address_dict = {
     'pnr_delay'             :0x40600018,
     'pnr_source_is_inverse' :0x4060001C,
 
+    'dac_logic_mask'        :0x40600028,
+
     'photon1'               :0x40600040,
     'photon2'               :0x40600044,
     'photon3'               :0x40600048,
@@ -210,6 +212,22 @@ class SCPIServerPNR(CmdTCPServer):
                 success = False
             return 'yes' if success else 'no'
 
+        if cmd.startswith('Set:dac_logic_mask'): # Set:dac_logic_mask 4
+            target = cmd[len('Set:dac_logic_mask'):]
+            print(target)
+            try:
+                success = set_dac_logic_mask(target)
+            except:
+                success = False
+            return 'yes' if success else 'no'
+
+        if cmd.startswith('Read:dac_logic_mask'): # Read:dac_logic_mask
+            try:
+                result = read_dac_logic_mask()
+            except:
+                result = None
+            return '{}'.format(result) if result != None else 'no'
+
         else:
             return 'unknown cmd'
 
@@ -291,6 +309,22 @@ def reset_adc_fifo():
     write_value(address_dict['adc_fifo_rst'], 1)
     write_value(address_dict['adc_fifo_rst'], 0)
     return True
+
+def set_dac_logic_mask(cmd: str):
+    from monitor import write_value
+    cmd_s = cmd.split()
+    assert len(cmd_s) == 1
+    target = 'dac_logic_mask'
+    value = int(cmd_s[0])
+    assert 0 <= value < (1<<16)
+    write_value(address_dict[target], value)
+    return True
+
+def read_dac_logic_mask():
+    from monitor import read_value
+    target = 'dac_logic_mask'
+    value = read_value(address_dict[target])
+    return value
 
 
 # ipv4 = os.popen('ip addr show eth0 | grep "\<inet\>" | awk \'{ print $2 }\' | awk -F "/" \'{ print $1 }\'').read().strip()

@@ -27,6 +27,7 @@ module PNR_main(
     input trigger,
     input delayed_trigger,
     input [14-1:0] pnr_source_sig,
+    input [16-1:0] dac_logic_mask,
     //ADC_threshold for photon number resolving
     input [14-1:0] adc_photon_threshold_1,
     input [14-1:0] adc_photon_threshold_2,
@@ -37,8 +38,9 @@ module PNR_main(
     input [14-1:0] adc_photon_threshold_7,
     input [14-1:0] adc_photon_threshold_8,
     // output
-    output [8-1:0] extension_GPIO_p,
-    output [8-1:0] extension_GPIO_n,
+    output [ 8-1:0] extension_GPIO_p,
+    output [ 8-1:0] extension_GPIO_n,
+    output [14-1:0] dac_masked_GPIO,
     // adc FIFO control
     output [14-1:0] adc_fifo_data,
     output          adc_fifo_wr_en
@@ -80,5 +82,8 @@ assign adc_fifo_wr_en = delayed_trigger;
 
 assign extension_GPIO_p = segment_photon_num;
 assign extension_GPIO_n = 8'b0;
+
+assign dac_masked_GPIO = |(dac_logic_mask & { extension_GPIO_n , extension_GPIO_p}) ? 14'b01111111111111 : 14'b0;
+
 
 endmodule
