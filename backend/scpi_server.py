@@ -212,15 +212,16 @@ class SCPIServerPNR(CmdTCPServer):
                 success = False
             return 'yes' if success else 'no'
 
-        if cmd.startwith('Set:dac_logic_mask'): # Set:dac_logic_mask 4
+        if cmd.startswith('Set:dac_logic_mask'): # Set:dac_logic_mask 4
             target = cmd[len('Set:dac_logic_mask'):]
+            print(target)
             try:
                 success = set_dac_logic_mask(target)
             except:
                 success = False
             return 'yes' if success else 'no'
 
-        if cmd.startwith('Set:dac_logic_mask'): # Read:dac_logic_mask
+        if cmd.startswith('Read:dac_logic_mask'): # Read:dac_logic_mask
             try:
                 result = read_dac_logic_mask()
             except:
@@ -314,8 +315,8 @@ def set_dac_logic_mask(cmd: str):
     cmd_s = cmd.split()
     assert len(cmd_s) == 1
     target = 'dac_logic_mask'
-    value = int(cmd_s)
-    assert 0 <= int(cmd_s) < (1<<16)
+    value = int(cmd_s[0])
+    assert 0 <= value < (1<<16)
     write_value(address_dict[target], value)
     return True
 
