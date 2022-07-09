@@ -45,6 +45,7 @@ module PNR_register(
    output reg            trig_is_posedge  , // trigger with positive edge
    output reg [ 32-1: 0] pnr_delay        , // trigger pnr delay(unit is a clock duration)
    output reg            pnr_source_is_inverse, // inverse pnr source or not
+   output reg [ 16-1: 0] dac_logic_mask   , // for convinience, make |(gpio(16bit)&dac_logic_mask) be seen from BNC,for example 0V or 1V
    //ADC_threshold for photon number resolving
    output reg [ 14-1: 0] adc_photon_threshold_1,
    output reg [ 14-1: 0] adc_photon_threshold_2,
@@ -75,6 +76,7 @@ always @(posedge clk_i) begin
       trig_is_posedge<= 1'b1; // default trig with positive edge
       pnr_delay      <= 32'd100; // default delay is 800ns
       pnr_source_is_inverse <= 1'b0; // default : signal is not inversed
+      dac_logic_mask <= 16'd0; // default : dac_bnc output is disabled
       //aux_i is read only
       aux_o          <= 32'd0;
 
@@ -105,6 +107,7 @@ always @(posedge clk_i) begin
          
          //0x20 is aux_i, read only
          if (sys_addr[20-1:0]==20'h24)    aux_o              <= sys_wdata[32-1:0] ;
+         if (sys_addr[20-1:0]==20'h28)    dac_logic_mask     <= sys_wdata[16-1:0] ;
          
          if (sys_addr[20-1:0]==20'h40)    adc_photon_threshold_1  <= sys_wdata[14-1:0] ;
          if (sys_addr[20-1:0]==20'h44)    adc_photon_threshold_2  <= sys_wdata[14-1:0] ;
@@ -147,6 +150,7 @@ end else begin
       
       20'h20  : begin sys_ack <= sys_en;         sys_rdata <=  aux_i                                               ; end
       20'h24  : begin sys_ack <= sys_en;         sys_rdata <=  aux_o                                               ; end
+      20'h28  : begin sys_ack <= sys_en;         sys_rdata <=  dac_logic_mask                                      ; end
       
       20'h40  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_1}              ; end
       20'h44  : begin sys_ack <= sys_en;         sys_rdata <= {{32-14{1'b0}}, adc_photon_threshold_2}              ; end

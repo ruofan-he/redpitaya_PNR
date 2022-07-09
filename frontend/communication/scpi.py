@@ -153,6 +153,19 @@ class SCPI_mannager():
     def reset_adc_fifo(self):
         self.ask('Reset:adc_fifo\n')
 
+    def set_dac_logic_mask(self, value: int):
+        self.ask(f'Set:dac_logic_mask {value}\n')
+
+    def read_dac_logic_mask(self) -> int:
+        result = self.ask(f'Read:dac_logic_mask\n')
+        try:
+            value = int(result)
+        except:
+            value = 0
+        return value
+
+
+
 
 if __name__ == '__main__':
     some = SCPI_mannager()

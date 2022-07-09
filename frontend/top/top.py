@@ -205,6 +205,15 @@ class Top_window(QtWidgets.QMainWindow):
         self.checkBox_trig_pos_edge             : QtWidgets.QCheckBox   = None
         self.checkBox_trig_is_a                 : QtWidgets.QCheckBox   = None
         self.checkBox_pnr_sig_inverse           : QtWidgets.QCheckBox   = None
+        self.checkBox_dac_logic_mask_photon0    : QtWidgets.QCheckBox   = None
+        self.checkBox_dac_logic_mask_photon1    : QtWidgets.QCheckBox   = None
+        self.checkBox_dac_logic_mask_photon2    : QtWidgets.QCheckBox   = None
+        self.checkBox_dac_logic_mask_photon3    : QtWidgets.QCheckBox   = None
+        self.checkBox_dac_logic_mask_photon4    : QtWidgets.QCheckBox   = None
+        self.checkBox_dac_logic_mask_photon5    : QtWidgets.QCheckBox   = None
+        self.checkBox_dac_logic_mask_photon6    : QtWidgets.QCheckBox   = None
+        self.checkBox_dac_logic_mask_photon7    : QtWidgets.QCheckBox   = None
+
 
     def attach_graph(self):
         self.graph = graph_view(self) #pg.GraphicsLayoutWidget(show=True)
@@ -292,6 +301,19 @@ class Top_window(QtWidgets.QMainWindow):
         self.checkBox_trig_pos_edge.setChecked(self.scpi_mannager.read_trig_positive_edge())
         self.checkBox_trig_is_a.setChecked(self.scpi_mannager.read_trig_is_a())
 
+        dac_logic_mask = self.scpi_mannager.read_dac_logic_mask()
+        self.checkBox_dac_logic_mask_photon0.setChecked(bool(dac_logic_mask & (1<<0)))
+        self.checkBox_dac_logic_mask_photon1.setChecked(bool(dac_logic_mask & (1<<1)))
+        self.checkBox_dac_logic_mask_photon2.setChecked(bool(dac_logic_mask & (1<<2)))
+        self.checkBox_dac_logic_mask_photon3.setChecked(bool(dac_logic_mask & (1<<3)))
+        self.checkBox_dac_logic_mask_photon4.setChecked(bool(dac_logic_mask & (1<<4)))
+        self.checkBox_dac_logic_mask_photon5.setChecked(bool(dac_logic_mask & (1<<5)))
+        self.checkBox_dac_logic_mask_photon6.setChecked(bool(dac_logic_mask & (1<<6)))
+        self.checkBox_dac_logic_mask_photon7.setChecked(bool(dac_logic_mask & (1<<7)))
+
+
+        
+
 
     def push_write(self):
         self.scpi_mannager.set_trigger_level(self.spinBox_trigger_level.value())
@@ -308,6 +330,19 @@ class Top_window(QtWidgets.QMainWindow):
         self.scpi_mannager.set_pnr_sig_inverse(self.checkBox_pnr_sig_inverse.isChecked())
         self.scpi_mannager.set_trig_positive_edge(self.checkBox_trig_pos_edge.isChecked())
         self.scpi_mannager.set_trig_is_a(self.checkBox_trig_is_a.isChecked())
+
+        dac_logic_mask = 0
+        dac_logic_mask += self.checkBox_dac_logic_mask_photon0.isChecked() << 0
+        dac_logic_mask += self.checkBox_dac_logic_mask_photon1.isChecked() << 1
+        dac_logic_mask += self.checkBox_dac_logic_mask_photon2.isChecked() << 2
+        dac_logic_mask += self.checkBox_dac_logic_mask_photon3.isChecked() << 3
+        dac_logic_mask += self.checkBox_dac_logic_mask_photon4.isChecked() << 4
+        dac_logic_mask += self.checkBox_dac_logic_mask_photon5.isChecked() << 5
+        dac_logic_mask += self.checkBox_dac_logic_mask_photon6.isChecked() << 6
+        dac_logic_mask += self.checkBox_dac_logic_mask_photon7.isChecked() << 7
+        self.scpi_mannager.set_dac_logic_mask(dac_logic_mask)
+        
+
 
     def push_graph_reset(self):
         self.graph.reset_graph()
