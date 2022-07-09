@@ -83,7 +83,7 @@ assign adc_fifo_wr_en = delayed_trigger;
 assign extension_GPIO_p = segment_photon_num;
 assign extension_GPIO_n = 8'b0;
 
-assign dac_masked_GPIO = &(dac_logic_mask & { extension_GPIO_n , extension_GPIO_p}) ? 14'b01111111111111 : 14'b0;
+assign dac_masked_GPIO = |(dac_logic_mask & { extension_GPIO_n , extension_GPIO_p}) ? 14'b01111111111111 : 14'b0;
 
 
 endmodule
